@@ -54,7 +54,7 @@ class GameScene: SKScene {
         setupBackground()
         setupScoreLabel()
         setupTimeLabel()
-        //        setupCenterRing()
+        setupCenterRing()
         //        setupColorBar()
         
         
@@ -83,7 +83,6 @@ class GameScene: SKScene {
     
     func setupTimeLabel(){
         timer = 90
-        
         timerLabel = SKLabelNode(fontNamed: "Avenir Next")
         timerLabel.fontColor = UIColor.blackColor()
         timerLabel.fontSize = 22
@@ -96,15 +95,26 @@ class GameScene: SKScene {
     
     func runTimer(){
         if timer > 0 {
-        let delay = SKAction.waitForDuration(1)
-        let decriment = SKAction.runBlock { () -> Void in
-            timer = timer - 1
-            timerLabel.text = String(timer)
+            let delay = SKAction.waitForDuration(1)
+            let decriment = SKAction.runBlock { () -> Void in
+                timer = timer - 1
+                timerLabel.text = String(timer)
+            }
+            let decrimentThenDelay = SKAction.sequence([decriment, delay])
+            let decrimentThenDelayForTimer = SKAction.repeatAction(decrimentThenDelay, count: 5)
+            self.runAction(decrimentThenDelayForTimer, completion: {
+                // Call game over function
+                print("game over")
+            })
         }
-        let decrimentThenDelay = SKAction.sequence([decriment, delay])
-        let decrimentThenDelayForever = SKAction.repeatActionForever(decrimentThenDelay)
-        self.runAction(decrimentThenDelayForever)
-        }
+    }
+    
+    func setupCenterRing(){
+        let background = SKSpriteNode(imageNamed: "background")
+        background.position = CGPointMake(self.frame.width / 2, self.frame.height / 2)
+        background.size = CGSizeMake(background.frame.width, background.frame.height)
+        background.zPosition = -100
+        self.addChild(background)
     }
     
     
@@ -120,5 +130,8 @@ class GameScene: SKScene {
     
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
+        if timer == 0 {
+            
+        }
     }
 }
