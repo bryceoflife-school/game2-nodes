@@ -24,7 +24,8 @@
 		C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89111A33EF5000AC99D5 /* nodeM@2x.png */; };
 		C87F891A1A33EF5000AC99D5 /* nodeR@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89121A33EF5000AC99D5 /* nodeR@2x.png */; };
 		C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89131A33EF5000AC99D5 /* nodeT@2x.png */; };
-		C8E024621A34D45E0057D34B /* centerRing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E024611A34D45E0057D34B /* centerRing@2x.png */; };
+		C8E024641A34D7000057D34B /* centerRing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E024631A34D7000057D34B /* centerRing@2x.png */; };
+		C8E024661A34DADF0057D34B /* nodeW.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E024651A34DADF0057D34B /* nodeW.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,7 +60,8 @@
 		C87F89111A33EF5000AC99D5 /* nodeM@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeM@2x.png"; sourceTree = "<group>"; };
 		C87F89121A33EF5000AC99D5 /* nodeR@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeR@2x.png"; sourceTree = "<group>"; };
 		C87F89131A33EF5000AC99D5 /* nodeT@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeT@2x.png"; sourceTree = "<group>"; };
-		C8E024611A34D45E0057D34B /* centerRing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "centerRing@2x.png"; sourceTree = "<group>"; };
+		C8E024631A34D7000057D34B /* centerRing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "centerRing@2x.png"; sourceTree = "<group>"; };
+		C8E024651A34DADF0057D34B /* nodeW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nodeW.png; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -148,7 +150,8 @@
 				C87F890E1A33EF5000AC99D5 /* launchImage@2x.png */,
 				C87F890F1A33EF5000AC99D5 /* nodeB@2x.png */,
 				C87F89101A33EF5000AC99D5 /* nodeG@2x.png */,
-				C8E024611A34D45E0057D34B /* centerRing@2x.png */,
+				C8E024651A34DADF0057D34B /* nodeW.png */,
+				C8E024631A34D7000057D34B /* centerRing@2x.png */,
 				C87F89111A33EF5000AC99D5 /* nodeM@2x.png */,
 				C87F89121A33EF5000AC99D5 /* nodeR@2x.png */,
 				C87F89131A33EF5000AC99D5 /* nodeT@2x.png */,
@@ -237,11 +240,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				C87F88F41A33EDBA00AC99D5 /* LaunchScreen.xib in Resources */,
+				C8E024661A34DADF0057D34B /* nodeW.png in Resources */,
 				C87F89171A33EF5000AC99D5 /* nodeB@2x.png in Resources */,
 				C87F88F11A33EDBA00AC99D5 /* Images.xcassets in Resources */,
 				C87F88E81A33EDBA00AC99D5 /* GameScene.sks in Resources */,
 				C87F89141A33EF5000AC99D5 /* 120 - iPhone App Icon.png in Resources */,
-				C8E024621A34D45E0057D34B /* centerRing@2x.png in Resources */,
+				C8E024641A34D7000057D34B /* centerRing@2x.png in Resources */,
 				C87F89161A33EF5000AC99D5 /* launchImage@2x.png in Resources */,
 				C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */,
 				C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */,
