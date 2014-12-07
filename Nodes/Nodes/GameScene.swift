@@ -23,7 +23,7 @@ var score: Int!
 var haveMPowerup: Bool!
 var haveTPowerup: Bool!
 //var colorBarProgress: Int!
-//var timer
+var timer: Int!
 
 // Textures
 var nodeTexture: SKTexture!
@@ -49,14 +49,14 @@ class GameScene: SKScene {
         self.backgroundColor = UIColor.blackColor()
         self.physicsBody = SKPhysicsBody(edgeLoopFromRect: view.frame)
         self.physicsBody?.categoryBitMask = worldCategory
-
+        
         // Setup Methods
         setupBackground()
         setupScoreLabel()
-//        setupTimeLabel()
-//        setupCenterRing()
-//        setupColorBar()
-
+        setupTimeLabel()
+        //        setupCenterRing()
+        //        setupColorBar()
+        
         
     }
     
@@ -80,8 +80,33 @@ class GameScene: SKScene {
         scoreLabel.zPosition = 100
         self.addChild(scoreLabel)
     }
-
-
+    
+    func setupTimeLabel(){
+        timer = 90
+        
+        timerLabel = SKLabelNode(fontNamed: "Avenir Next")
+        timerLabel.fontColor = UIColor.blackColor()
+        timerLabel.fontSize = 22
+        timerLabel.position = CGPointMake(self.frame.width / 2, self.frame.height / 1.05)
+        timerLabel.text = String(timer)
+        timerLabel.zPosition = 100
+        self.addChild(timerLabel)
+        runTimer()
+    }
+    
+    func runTimer(){
+        if timer > 0 {
+        let delay = SKAction.waitForDuration(1)
+        let decriment = SKAction.runBlock { () -> Void in
+            timer = timer - 1
+            timerLabel.text = String(timer)
+        }
+        let decrimentThenDelay = SKAction.sequence([decriment, delay])
+        let decrimentThenDelayForever = SKAction.repeatActionForever(decrimentThenDelay)
+        self.runAction(decrimentThenDelayForever)
+        }
+    }
+    
     
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -90,9 +115,9 @@ class GameScene: SKScene {
         for touch: AnyObject in touches {
             let location = touch.locationInNode(self)
             
-            }
+        }
     }
-   
+    
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
     }
