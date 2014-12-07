@@ -32,6 +32,7 @@ var haveTPowerup: Bool!
 //var colorBarProgress: Int!
 var timer: Int!
 var gameOver = false
+var gameBegan = false
 
 // Random Variable
 var columnMultiplier: CGFloat!
@@ -71,7 +72,7 @@ class GameScene: SKScene {
         
         nodeSet = SKNode()
         self.addChild(nodeSet)
-        
+       
         
         
     }
@@ -193,18 +194,11 @@ class GameScene: SKScene {
         
     }
     
-//    func random() -> CGFloat {
-//        return CGFloat(Float(arc4random()) / 0xFFFFFFFF)
-//    }
-//    
-//    func random(#min: CGFloat, max: CGFloat) -> CGFloat {
-//        return random() * (max - min) + min
-//    }
-    
     
     func spawnNodes(){
             let spawn = SKAction.runBlock { () -> Void in
                 self.setupNodes()
+                 gameBegan = true
             }
             
             let delay = SKAction.waitForDuration(2.0)
@@ -213,14 +207,40 @@ class GameScene: SKScene {
             self.runAction(spawnThenDelayForever)
     }
     
+    func updateScore() {
+        
+        for var index = 0; index < nodeSet.children.count; ++index{
+            
+            if ((nodeSet.children[index].position.x > centerRing.frame.minX)
+                && (nodeSet.children[index].position.x < centerRing.frame.maxX)
+                && (nodeSet.children[index].position.y > centerRing.frame.minY)
+                && (nodeSet.children[index].position.y < centerRing.frame.maxY)) {
+                    
+                    // If Colors match
+                    if nodeSet.children[index].color == centerRing.color {
+                        println("Goodbye")
+                        nodeSet.children[index].removeFromParent()
+                        score = score + 1
+                        scoreLabel.text = String(score)
+                    }
+                    
+                    
+                    
+                    
+            }
+        }
+        
+    }
     
     // Function to handle object contact
-    func didBeginContact(contact: SKPhysicsContact) {
-        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
-            println("NodeImpact")
-        }
-
-    }
+//    func didBeginContact(contact: SKPhysicsContact) {
+//        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
+//            println("NodeImpact")
+//        }
+//
+//    }
+    
+    
     
     
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
@@ -299,10 +319,9 @@ class GameScene: SKScene {
         if gameOver{
             self.removeAllActions()
         }
-        
-//        for var index = 0; index < nodeSet.children.count; ++index {
-//            println("index pos: \(nodeSet.children[index].position)")
-//      }
+        if gameBegan{
+            updateScore()
+        }
         
         
     }
