@@ -16,6 +16,14 @@
 		C87F88F41A33EDBA00AC99D5 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = C87F88F21A33EDBA00AC99D5 /* LaunchScreen.xib */; };
 		C87F89001A33EDBA00AC99D5 /* NodesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87F88FF1A33EDBA00AC99D5 /* NodesTests.swift */; };
 		C87F890A1A33EDFB00AC99D5 /* SpriteKit+Spring.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87F89091A33EDFB00AC99D5 /* SpriteKit+Spring.swift */; };
+		C87F89141A33EF5000AC99D5 /* 120 - iPhone App Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F890C1A33EF5000AC99D5 /* 120 - iPhone App Icon.png */; };
+		C87F89151A33EF5000AC99D5 /* background@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F890D1A33EF5000AC99D5 /* background@2x.png */; };
+		C87F89161A33EF5000AC99D5 /* launchImage@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F890E1A33EF5000AC99D5 /* launchImage@2x.png */; };
+		C87F89171A33EF5000AC99D5 /* nodeB@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F890F1A33EF5000AC99D5 /* nodeB@2x.png */; };
+		C87F89181A33EF5000AC99D5 /* nodeG@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89101A33EF5000AC99D5 /* nodeG@2x.png */; };
+		C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89111A33EF5000AC99D5 /* nodeM@2x.png */; };
+		C87F891A1A33EF5000AC99D5 /* nodeR@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89121A33EF5000AC99D5 /* nodeR@2x.png */; };
+		C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89131A33EF5000AC99D5 /* nodeT@2x.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +50,14 @@
 		C87F88FE1A33EDBA00AC99D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C87F88FF1A33EDBA00AC99D5 /* NodesTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NodesTests.swift; sourceTree = "<group>"; };
 		C87F89091A33EDFB00AC99D5 /* SpriteKit+Spring.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "SpriteKit+Spring.swift"; sourceTree = "<group>"; };
+		C87F890C1A33EF5000AC99D5 /* 120 - iPhone App Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "120 - iPhone App Icon.png"; sourceTree = "<group>"; };
+		C87F890D1A33EF5000AC99D5 /* background@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "background@2x.png"; sourceTree = "<group>"; };
+		C87F890E1A33EF5000AC99D5 /* launchImage@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "launchImage@2x.png"; sourceTree = "<group>"; };
+		C87F890F1A33EF5000AC99D5 /* nodeB@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeB@2x.png"; sourceTree = "<group>"; };
+		C87F89101A33EF5000AC99D5 /* nodeG@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeG@2x.png"; sourceTree = "<group>"; };
+		C87F89111A33EF5000AC99D5 /* nodeM@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeM@2x.png"; sourceTree = "<group>"; };
+		C87F89121A33EF5000AC99D5 /* nodeR@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeR@2x.png"; sourceTree = "<group>"; };
+		C87F89131A33EF5000AC99D5 /* nodeT@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeT@2x.png"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +115,7 @@
 		C87F88E31A33EDBA00AC99D5 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				C87F890B1A33EF5000AC99D5 /* Assets */,
 				C87F88E41A33EDBA00AC99D5 /* Info.plist */,
 			);
 			name = "Supporting Files";
@@ -119,6 +136,21 @@
 				C87F88FE1A33EDBA00AC99D5 /* Info.plist */,
 			);
 			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		C87F890B1A33EF5000AC99D5 /* Assets */ = {
+			isa = PBXGroup;
+			children = (
+				C87F890C1A33EF5000AC99D5 /* 120 - iPhone App Icon.png */,
+				C87F890D1A33EF5000AC99D5 /* background@2x.png */,
+				C87F890E1A33EF5000AC99D5 /* launchImage@2x.png */,
+				C87F890F1A33EF5000AC99D5 /* nodeB@2x.png */,
+				C87F89101A33EF5000AC99D5 /* nodeG@2x.png */,
+				C87F89111A33EF5000AC99D5 /* nodeM@2x.png */,
+				C87F89121A33EF5000AC99D5 /* nodeR@2x.png */,
+				C87F89131A33EF5000AC99D5 /* nodeT@2x.png */,
+			);
+			path = Assets;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -202,9 +234,17 @@
 			buildActionMask = 2147483647;
 			files = (
 				C87F88F41A33EDBA00AC99D5 /* LaunchScreen.xib in Resources */,
+				C87F89171A33EF5000AC99D5 /* nodeB@2x.png in Resources */,
 				C87F88F11A33EDBA00AC99D5 /* Images.xcassets in Resources */,
 				C87F88E81A33EDBA00AC99D5 /* GameScene.sks in Resources */,
+				C87F89141A33EF5000AC99D5 /* 120 - iPhone App Icon.png in Resources */,
+				C87F89161A33EF5000AC99D5 /* launchImage@2x.png in Resources */,
+				C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */,
+				C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */,
+				C87F89151A33EF5000AC99D5 /* background@2x.png in Resources */,
+				C87F89181A33EF5000AC99D5 /* nodeG@2x.png in Resources */,
 				C87F88EF1A33EDBA00AC99D5 /* Main.storyboard in Resources */,
+				C87F891A1A33EF5000AC99D5 /* nodeR@2x.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
