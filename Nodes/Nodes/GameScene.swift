@@ -230,8 +230,68 @@ class GameScene: SKScene {
             let location = touch.locationInNode(self) as CGPoint
             var node: SKNode = self.nodeAtPoint(location)
             
-            
+            if ((node.name == "nodeR") || (node.name == "nodeB") || (node.name == "nodeG")) {
+                // Step 1
+                selectedNode = node as? SKSpriteNode;
+                // Stop the sprite
+                selectedNode?.physicsBody?.velocity = CGVectorMake(0,0)
+                // Step 2: save information about the touch
+                history = [TouchInfo(location:location, time:touch.timestamp)]
+            }
+
         }
+    }
+    
+    override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
+        for touch: AnyObject in touches {
+            let location = touch.locationInNode(self) as CGPoint
+            
+            var node: SKNode = self.nodeAtPoint(location)
+            
+            if (selectedNode != nil) {
+                // Step 1. update sprite's position
+                selectedNode?.position = location
+                // Step 2. save touch data at index 0
+                history?.insert(TouchInfo(location:location, time:touch.timestamp),atIndex:0)
+            }
+        }
+    }
+
+    override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
+        let touch = touches.anyObject() as UITouch
+        let location = touch.locationInNode(self)
+        if (selectedNode != nil && history!.count > 1) {
+            var vx:CGFloat = 0.0
+            var vy:CGFloat = 0.0
+            var previousTouchInfo:TouchInfo?
+            // Adjust this value as needed
+            let maxIterations = 3
+            var numElts:Int = min(history!.count, maxIterations)
+            // Loop over touch history
+            for index in 1...numElts {
+                let touchInfo = history![index]
+                let location = touchInfo.location
+                if let previousLocation = previousTouchInfo?.location {
+                    // Step 1
+                    let dx = location.x - previousLocation.x
+                    let dy = location.y - previousLocation.y
+                    // Step 2
+                    let dt = CGFloat(touchInfo.time - previousTouchInfo!.time)
+                    // Step 3
+                    vx += dx / dt
+                    vy += dy / dt
+                }
+                previousTouchInfo = touchInfo
+            }
+            let count = CGFloat(numElts-1)
+            // Step 4
+            let velocity = CGVectorMake(vx/count,vy/count)
+            selectedNode?.physicsBody?.velocity = velocity
+            // Step 5
+            selectedNode = nil
+            history = nil
+        }
+        
     }
     
     override func update(currentTime: CFTimeInterval) {
