@@ -10,12 +10,13 @@ import SpriteKit
 import UIKit
 import Foundation
 
+
 // Object Variables
 var background: SKSpriteNode!
 var timerLabel: SKLabelNode!
 var scoreLabel: SKLabelNode!
 var centerRing: SKSpriteNode!
-var node: SKSpriteNode!
+var nodeBall: SKSpriteNode!
 var colorBar: SKSpriteNode!
 var nodeSet: SKNode!
 var nodeColor: Int!
@@ -38,6 +39,14 @@ var gameBegan = false
 var columnMultiplier: CGFloat!
 var rowMultiplier: CGFloat!
 var sizeMultiplier: CGFloat!
+
+// AI variables
+var direction: CGVector!
+var randomDX: Int!
+var randomDY: Int!
+var circlePath: CGPathRef!
+
+var invisibleControllerSprite = SKSpriteNode()
 
 // For Flicks
 struct TouchInfo {
@@ -72,8 +81,6 @@ class GameScene: SKScene {
         
         nodeSet = SKNode()
         self.addChild(nodeSet)
-       
-        
         
     }
     
@@ -139,7 +146,7 @@ class GameScene: SKScene {
     
     func setupNodes(){
         
-        node = SKSpriteNode(imageNamed: "nodeW")
+        nodeBall = SKSpriteNode(imageNamed: "nodeW")
         
         do {
             columnMultiplier = (CGFloat(arc4random_uniform(100))) / 100
@@ -153,58 +160,125 @@ class GameScene: SKScene {
             sizeMultiplier = (CGFloat(arc4random_uniform(100))) / 100
         } while(sizeMultiplier <= 0.5 || sizeMultiplier >= 1.0)
         
-        node.size = CGSizeMake(sizeMultiplier * node.frame.width / 2, sizeMultiplier *  node.frame.height / 2)
+        nodeBall.size = CGSizeMake(sizeMultiplier * nodeBall.frame.width / 2, sizeMultiplier *  nodeBall.frame.height / 2)
         
-        node.position = CGPointMake((columnMultiplier * self.frame.width), (rowMultiplier * self.frame.size.height))
-        node.physicsBody = SKPhysicsBody(circleOfRadius: node.frame.height/2)
-        node.physicsBody?.categoryBitMask = nodeCategory
-        node.physicsBody?.contactTestBitMask = nodeCategory
-        node.physicsBody?.dynamic = true
-        node.physicsBody?.affectedByGravity = false
-        node.colorBlendFactor = 1
+        nodeBall.position = CGPointMake((columnMultiplier * self.frame.width), (rowMultiplier * self.frame.size.height))
+        nodeBall.physicsBody = SKPhysicsBody(circleOfRadius: nodeBall.frame.height/2)
+        nodeBall.physicsBody?.categoryBitMask = nodeCategory
+        nodeBall.physicsBody?.contactTestBitMask = nodeCategory
+        nodeBall.physicsBody?.dynamic = true
+        nodeBall.physicsBody?.affectedByGravity = false
+        nodeBall.colorBlendFactor = 1
+        nodeBall.physicsBody?.mass = sizeMultiplier
+        nodeBall.physicsBody?.restitution = 0.3
+        nodeBall.physicsBody?.friction = 0.1
         
-       
+        
         nodeColor = Int(arc4random_uniform(3))
         switch nodeColor {
         case 0:
-            node.color = redColor
-            node.name = "nodeR"
-            nodeSet.addChild(node)
+            nodeBall.color = redColor
+            nodeBall.name = "nodeR"
+            nodeSet.addChild(nodeBall)
+            var signX = Int(arc4random_uniform(2))
+            var signY = Int(arc4random_uniform(2))
+            
+            if signX == 0 {
+                randomDX = Int(arc4random_uniform(100))
+            } else {
+                randomDX = Int(arc4random_uniform(100)) * -1
+            }
+            if signY == 0 {
+                randomDY = Int(arc4random_uniform(100))
+            } else {
+                randomDY = Int(arc4random_uniform(100)) * -1
+            }
+            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+            /*
+            circlePath = CGPathCreateWithEllipseInRect(CGRectMake(0 , 0, 300, 300), nil)
+            let followPath = SKAction.followPath(circlePath, asOffset: false, orientToPath: true, duration: 10)
+            let followPathForever = SKAction.repeatActionForever(followPath)
+            node.runAction(followPathForever)
+            */
+            
+            /*
+            var minAngle = 10
+            var maxAngle = 170
+            var degrees = arc4random_uniform((maxAngle - minAngle) + minAngle)
+            var radians = degrees * (M_PI/180.0)
+            direction = CGVectorMake(cos(radians), sin(radians));
+            */
+            
         case 1:
-            node.color = blueColor
-            node.name = "nodeB"
-            nodeSet.addChild(node)
+            nodeBall.color = blueColor
+            nodeBall.name = "nodeB"
+            nodeSet.addChild(nodeBall)
+            var signX = Int(arc4random_uniform(2))
+            var signY = Int(arc4random_uniform(2))
+            
+            if signX == 0 {
+                randomDX = Int(arc4random_uniform(300))
+            } else {
+                randomDX = Int(arc4random_uniform(300)) * -1
+            }
+            if signY == 0 {
+                randomDY = Int(arc4random_uniform(300))
+            } else {
+                randomDY = Int(arc4random_uniform(300)) * -1
+            }
+            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
         case 2:
-            node.color = greenColor
-            node.name = "nodeG"
-            nodeSet.addChild(node)
+            nodeBall.color = greenColor
+            nodeBall.name = "nodeG"
+            nodeSet.addChild(nodeBall)
+            var signX = Int(arc4random_uniform(2))
+            var signY = Int(arc4random_uniform(2))
+            
+            if signX == 0 {
+                randomDX = Int(arc4random_uniform(300))
+            } else {
+                randomDX = Int(arc4random_uniform(300)) * -1
+            }
+            if signY == 0 {
+                randomDY = Int(arc4random_uniform(300))
+            } else {
+                randomDY = Int(arc4random_uniform(300)) * -1
+            }
+            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
         default:
             break
         }
         
         
-        node.alpha = 0
+        nodeBall.alpha = 0
         let scale0 = SKAction.scaleTo(0, duration: 0)
-        node.runAction(scale0)
+        nodeBall.runAction(scale0)
         let fadeIn = SKAction.fadeAlphaTo(1.0, duration: 0.2)
         let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
         let fadeAndScale = SKAction.group([fadeIn,scaleIn])
-        node.runAction(fadeAndScale)
+        nodeBall.runAction(fadeAndScale)
         
+        let rangeForOrientation = SKRange(constantValue: CGFloat(M_2_PI*7))
+        nodeBall.constraints = [SKConstraint.orientToNode(invisibleControllerSprite, offset: rangeForOrientation)]
         
     }
     
     
     func spawnNodes(){
-            let spawn = SKAction.runBlock { () -> Void in
-                self.setupNodes()
-                 gameBegan = true
-            }
-            
-            let delay = SKAction.waitForDuration(2.0)
-            let spawnThenDelay = SKAction.sequence([spawn, delay])
-            let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
-            self.runAction(spawnThenDelayForever)
+        let spawn = SKAction.runBlock { () -> Void in
+            self.setupNodes()
+            gameBegan = true
+        }
+        
+        let delay = SKAction.waitForDuration(1.5)
+        let spawnThenDelay = SKAction.sequence([spawn, delay])
+        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
+        self.runAction(spawnThenDelayForever)
+        
+        invisibleControllerSprite.size = CGSizeMake(0, 0)
+        self.addChild(invisibleControllerSprite)
+        
+        
     }
     
     func updateScore() {
@@ -220,25 +294,31 @@ class GameScene: SKScene {
                     if nodeSet.children[index].color == centerRing.color {
                         println("Goodbye")
                         nodeSet.children[index].removeFromParent()
-                        score = score + 1
-                        scoreLabel.text = String(score)
+                        if !gameOver{
+                            score = score + 1
+                            scoreLabel.text = String(score)
+                        }
+                    } else {
+                        nodeSet.children[index].removeFromParent()
+                        if score > 0 {
+                            score = score - 1
+                            scoreLabel.text = String(score)
+                        }
                     }
-                    
-                    
-                    
-                    
             }
         }
         
     }
     
+    
+    
     // Function to handle object contact
-//    func didBeginContact(contact: SKPhysicsContact) {
-//        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
-//            println("NodeImpact")
-//        }
-//
-//    }
+    //    func didBeginContact(contact: SKPhysicsContact) {
+    //        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
+    //            println("NodeImpact")
+    //        }
+    //
+    //    }
     
     
     
@@ -258,7 +338,35 @@ class GameScene: SKScene {
                 // Step 2: save information about the touch
                 history = [TouchInfo(location:location, time:touch.timestamp)]
             }
-
+                
+                // Determine the new position for the invisible sprite:
+                // The calculation is needed to ensure the positions of both sprites
+                // are nearly the same, but different. Otherwise the hero sprite rotates
+                // back to it's original orientation after reaching the location of
+                // the invisible sprite
+                var xOffset:CGFloat = 1.0
+                var yOffset:CGFloat = 1.0
+                for var index = 0; index < nodeSet.children.count; ++index{
+                    if location.x>nodeSet.children[index].position.x {
+                        xOffset = -1.0
+                    }
+                    if location.y>nodeSet.children[index].position.y {
+                        yOffset = -1.0
+                    }
+                    
+                    
+                    // Create an action to move the invisibleControllerSprite.
+                    // This will cause automatic orientation changes for the hero sprite
+                    let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                    invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                    
+                    // Create an action to move the hero sprite to the touch location
+                    let actionMove = SKAction.moveTo(location, duration: 1)
+                    nodeSet.children[index].runAction(actionMove)
+                    selectedNode?.removeAllActions()
+                
+                
+            }
         }
     }
     
@@ -276,7 +384,7 @@ class GameScene: SKScene {
             }
         }
     }
-
+    
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         let touch = touches.anyObject() as UITouch
         let location = touch.locationInNode(self)
@@ -322,6 +430,8 @@ class GameScene: SKScene {
         if gameBegan{
             updateScore()
         }
+        
+        
         
         
     }
