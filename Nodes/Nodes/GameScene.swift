@@ -7,10 +7,9 @@
 //
 
 /* Todo:
-    * TimeBonus
-    * Powerups
-    * Pause Button
-    * Restart Button
+* TimeBonus
+* Powerups
+* Pause Button
 
 
 */
@@ -32,6 +31,7 @@ var colorBar: SKSpriteNode!
 var nodeSet: SKNode!
 var nodeColor: Int!
 var centerRingColor: Int!
+var replayButton: SKSpriteNode!
 
 // Colors
 let redColor = SKColor(red: 1, green: 28/255, blue: 105/255, alpha: 1)
@@ -145,8 +145,8 @@ class GameScene: SKScene {
             highScoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
         }
     }
-
-
+    
+    
     
     func setupTimeLabel(){
         timer = 90
@@ -160,6 +160,7 @@ class GameScene: SKScene {
         runTimer()
     }
     
+    
     func runTimer(){
         if timer > 0 {
             let delay = SKAction.waitForDuration(1)
@@ -172,6 +173,7 @@ class GameScene: SKScene {
             self.runAction(decrimentThenDelayForTimer, completion: {
                 // Call game over function
                 gameOver = true
+                self.setupReplayButton()
                 print("game over")
             })
         }
@@ -199,7 +201,7 @@ class GameScene: SKScene {
         default:
             break
         }
-
+        
     }
     
     func randomlyChangeRingColor() {
@@ -225,6 +227,32 @@ class GameScene: SKScene {
         let waitThenChange = SKAction.sequence([waitForInterval, changeColor])
         let changeForever = SKAction.repeatActionForever(waitThenChange)
         centerRing.runAction(changeForever)
+        
+    }
+    
+    func setupReplayButton() {
+        replayButton = SKSpriteNode(imageNamed: "refreshButton")
+        replayButton.size = CGSizeMake(replayButton.size.width , replayButton.size.height)
+        replayButton.position = CGPointMake(self.frame.width / 2, self.frame.height / 2)
+        replayButton.zPosition = 100
+        replayButton.name = "replayButton"
+        
+        self.addChild(replayButton)
+    }
+    
+    func resetScene(){
+        replayButton.removeFromParent()
+        invisibleControllerSprite.removeFromParent()
+        gameOver = false
+        scoreLabel.removeFromParent()
+        timerLabel.removeFromParent()
+        
+
+        setupScoreLabel()
+        setupTimeLabel()
+        timerLabel.text = String(timer)
+        spawnNodes()
+        timeBonus = 0
         
     }
     
@@ -379,7 +407,7 @@ class GameScene: SKScene {
                         nodeSet.children[index].runAction(transitionRemove)
                         
                         scoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
-                    
+                        
                         
                         
                         if nodeSet.children[index].name != "Scored" {
@@ -424,7 +452,7 @@ class GameScene: SKScene {
     //        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
     //            println("NodeImpact")
     //        }
-    //
+    //x
     //    }
     
     
@@ -467,7 +495,9 @@ class GameScene: SKScene {
                 nodeSet.children[index].runAction(actionMove)
                 selectedNode?.removeAllActions()
                 
-                
+            }
+            if (node.name == "replayButton"){
+                resetScene()
             }
         }
     }
