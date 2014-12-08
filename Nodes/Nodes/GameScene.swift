@@ -6,6 +6,16 @@
 //  Copyright (c) 2014 Bryce Daniel. All rights reserved.
 //
 
+/* Todo:
+    * TimeBonus
+    * Powerups
+    * Pause Button
+    * Restart Button
+
+
+*/
+
+
 import SpriteKit
 import UIKit
 import Foundation
@@ -15,11 +25,13 @@ import Foundation
 var background: SKSpriteNode!
 var timerLabel: SKLabelNode!
 var scoreLabel: SKLabelNode!
+var highScoreLabel: SKLabelNode!
 var centerRing: SKSpriteNode!
 var nodeBall: SKSpriteNode!
 var colorBar: SKSpriteNode!
 var nodeSet: SKNode!
 var nodeColor: Int!
+var centerRingColor: Int!
 
 // Colors
 let redColor = SKColor(red: 1, green: 28/255, blue: 105/255, alpha: 1)
@@ -28,6 +40,8 @@ let blueColor = SKColor(red: 62/225, green: 197/255, blue: 255/255, alpha: 1)
 
 // GameStates
 var score: Int!
+var highScore = NSInteger()
+var timeBonus: Int!
 var haveMPowerup: Bool!
 var haveTPowerup: Bool!
 //var colorBarProgress: Int!
@@ -73,6 +87,7 @@ class GameScene: SKScene {
         // Setup Methods
         setupBackground()
         setupScoreLabel()
+        setupHighScoreLabel()
         setupTimeLabel()
         setupCenterRing()
         spawnNodes()
@@ -81,6 +96,9 @@ class GameScene: SKScene {
         
         nodeSet = SKNode()
         self.addChild(nodeSet)
+        randomlyChangeRingColor()
+        
+        timeBonus = 0
         
     }
     
@@ -99,11 +117,36 @@ class GameScene: SKScene {
         scoreLabel = SKLabelNode(fontNamed: "Avenir Next")
         scoreLabel.fontColor = UIColor.blackColor()
         scoreLabel.fontSize = 22
-        scoreLabel.position = CGPointMake(self.frame.width / 30, self.frame.height / 1.05)
+        scoreLabel.position = CGPointMake(self.frame.width / 25, self.frame.height / 1.05)
         scoreLabel.text = String(score)
         scoreLabel.zPosition = 100
         self.addChild(scoreLabel)
     }
+    
+    func setupHighScoreLabel() {
+        if highScore <= score {
+            highScore = score
+        }
+        highScoreLabel = SKLabelNode(fontNamed: "Avenir Next")
+        highScoreLabel.fontColor = UIColor.blackColor()
+        highScoreLabel.alpha = 0.5
+        highScoreLabel.fontSize = 22
+        highScoreLabel.position = CGPointMake(self.frame.width / 25, self.frame.height / 1.1)
+        highScoreLabel.text = String(highScore)
+        highScoreLabel.zPosition = 100
+        self.addChild(highScoreLabel)
+    }
+    
+    // Function for updating the high score
+    func updateHighScore() {
+        if highScore <= score {
+            highScore = score
+            highScoreLabel.text = String(highScore)
+            highScoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
+        }
+    }
+
+
     
     func setupTimeLabel(){
         timer = 90
@@ -139,9 +182,50 @@ class GameScene: SKScene {
         centerRing.position = CGPointMake(self.frame.width / 2, self.frame.height / 2)
         centerRing.size = CGSizeMake(centerRing.frame.width, centerRing.frame.height)
         centerRing.zPosition = -50
-        centerRing.color = greenColor
         centerRing.colorBlendFactor = 1.0
         self.addChild(centerRing)
+        
+        centerRingColor = Int(arc4random_uniform(3))
+        switch centerRingColor {
+        case 0:
+            centerRing.name = "ringR"
+            centerRing.color = redColor
+        case 1:
+            centerRing.name = "ringB"
+            centerRing.color = blueColor
+        case 2:
+            centerRing.name = "ringG"
+            centerRing.color = greenColor
+        default:
+            break
+        }
+
+    }
+    
+    func randomlyChangeRingColor() {
+        var interval = Int(arc4random_uniform(5) + 5)
+        let waitForInterval = SKAction.waitForDuration(NSTimeInterval(interval))
+        let changeColor = SKAction.runBlock{ () -> Void in
+            
+            centerRingColor = Int(arc4random_uniform(3))
+            switch centerRingColor {
+            case 0:
+                centerRing.name = "ringR"
+                centerRing.color = redColor
+            case 1:
+                centerRing.name = "ringB"
+                centerRing.color = blueColor
+            case 2:
+                centerRing.name = "ringG"
+                centerRing.color = greenColor
+            default:
+                break
+            }
+        }
+        let waitThenChange = SKAction.sequence([waitForInterval, changeColor])
+        let changeForever = SKAction.repeatActionForever(waitThenChange)
+        centerRing.runAction(changeForever)
+        
     }
     
     func setupNodes(){
@@ -201,14 +285,6 @@ class GameScene: SKScene {
             node.runAction(followPathForever)
             */
             
-            /*
-            var minAngle = 10
-            var maxAngle = 170
-            var degrees = arc4random_uniform((maxAngle - minAngle) + minAngle)
-            var radians = degrees * (M_PI/180.0)
-            direction = CGVectorMake(cos(radians), sin(radians));
-            */
-            
         case 1:
             nodeBall.color = blueColor
             nodeBall.name = "nodeB"
@@ -217,16 +293,18 @@ class GameScene: SKScene {
             var signY = Int(arc4random_uniform(2))
             
             if signX == 0 {
-                randomDX = Int(arc4random_uniform(300))
+                randomDX = Int(arc4random_uniform(100))
             } else {
-                randomDX = Int(arc4random_uniform(300)) * -1
+                randomDX = Int(arc4random_uniform(100)) * -1
             }
             if signY == 0 {
-                randomDY = Int(arc4random_uniform(300))
+                randomDY = Int(arc4random_uniform(100))
             } else {
-                randomDY = Int(arc4random_uniform(300)) * -1
+                randomDY = Int(arc4random_uniform(100)) * -1
             }
             nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+            
+            
         case 2:
             nodeBall.color = greenColor
             nodeBall.name = "nodeG"
@@ -235,14 +313,14 @@ class GameScene: SKScene {
             var signY = Int(arc4random_uniform(2))
             
             if signX == 0 {
-                randomDX = Int(arc4random_uniform(300))
+                randomDX = Int(arc4random_uniform(100))
             } else {
-                randomDX = Int(arc4random_uniform(300)) * -1
+                randomDX = Int(arc4random_uniform(100)) * -1
             }
             if signY == 0 {
-                randomDY = Int(arc4random_uniform(300))
+                randomDY = Int(arc4random_uniform(100))
             } else {
-                randomDY = Int(arc4random_uniform(300)) * -1
+                randomDY = Int(arc4random_uniform(100)) * -1
             }
             nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
         default:
@@ -262,7 +340,6 @@ class GameScene: SKScene {
         nodeBall.constraints = [SKConstraint.orientToNode(invisibleControllerSprite, offset: rangeForOrientation)]
         
     }
-    
     
     func spawnNodes(){
         let spawn = SKAction.runBlock { () -> Void in
@@ -292,22 +369,52 @@ class GameScene: SKScene {
                     
                     // If Colors match
                     if nodeSet.children[index].color == centerRing.color {
-                        println("Goodbye")
-                        nodeSet.children[index].removeFromParent()
-                        if !gameOver{
-                            score = score + 1
-                            scoreLabel.text = String(score)
+                        
+                        
+                        let fadeOut = SKAction.fadeAlphaTo(0.0, duration: 0.2)
+                        let scaleOut = SKAction.scaleTo(1.5, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
+                        let removeNode = SKAction.removeFromParent()
+                        let fadeAndScale = SKAction.group([fadeOut,scaleOut])
+                        let transitionRemove = SKAction.sequence([fadeAndScale,removeNode])
+                        nodeSet.children[index].runAction(transitionRemove)
+                        
+                        scoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
+                    
+                        
+                        
+                        if nodeSet.children[index].name != "Scored" {
+                            if !gameOver{
+                                score = score + 1
+                                (nodeSet.children[index] as SKNode).name = "Scored"
+                                scoreLabel.text = String(score)
+                                timeBonus = timeBonus + 1
+                                updateHighScore()
+                            }
+                            
                         }
                     } else {
-                        nodeSet.children[index].removeFromParent()
-                        if score > 0 {
-                            score = score - 1
-                            scoreLabel.text = String(score)
+                        let turnBlack = SKAction.colorizeWithColor(SKColor.blackColor(), colorBlendFactor: 1.0, duration: 0.1)
+                        let collapse = SKAction.scaleTo(0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 1.0)
+                        let removeNode = SKAction.removeFromParent()
+                        let blackenOut = SKAction.sequence([turnBlack,collapse])
+                        let collapseRemove = SKAction.sequence([blackenOut,removeNode])
+                        scoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
+                        nodeSet.children[index].runAction(collapseRemove)
+                        
+                        if nodeSet.children[index].name != "Deducted" {
+                            if !gameOver{
+                                if score > 0 {
+                                    score = score - 1
+                                    (nodeSet.children[index] as SKNode).name = "Deducted"
+                                    scoreLabel.text = String(score)
+                                    timeBonus = 0
+                                    updateHighScore()
+                                }
+                            }
                         }
                     }
             }
         }
-        
     }
     
     
@@ -338,32 +445,27 @@ class GameScene: SKScene {
                 // Step 2: save information about the touch
                 history = [TouchInfo(location:location, time:touch.timestamp)]
             }
+            
+            // Determine the new position for the invisible sprite:
+            var xOffset:CGFloat = 1.0
+            var yOffset:CGFloat = 1.0
+            for var index = 0; index < nodeSet.children.count; ++index{
+                if location.x>nodeSet.children[index].position.x {
+                    xOffset = -1.0
+                }
+                if location.y>nodeSet.children[index].position.y {
+                    yOffset = -1.0
+                }
                 
-                // Determine the new position for the invisible sprite:
-                // The calculation is needed to ensure the positions of both sprites
-                // are nearly the same, but different. Otherwise the hero sprite rotates
-                // back to it's original orientation after reaching the location of
-                // the invisible sprite
-                var xOffset:CGFloat = 1.0
-                var yOffset:CGFloat = 1.0
-                for var index = 0; index < nodeSet.children.count; ++index{
-                    if location.x>nodeSet.children[index].position.x {
-                        xOffset = -1.0
-                    }
-                    if location.y>nodeSet.children[index].position.y {
-                        yOffset = -1.0
-                    }
-                    
-                    
-                    // Create an action to move the invisibleControllerSprite.
-                    // This will cause automatic orientation changes for the hero sprite
-                    let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
-                    invisibleControllerSprite.runAction(actionMoveInvisibleNode)
-                    
-                    // Create an action to move the hero sprite to the touch location
-                    let actionMove = SKAction.moveTo(location, duration: 1)
-                    nodeSet.children[index].runAction(actionMove)
-                    selectedNode?.removeAllActions()
+                // Create an action to move the invisibleControllerSprite.
+                // This will cause automatic orientation changes for the hero sprite
+                let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                
+                // Create an action to move the hero sprite to the touch location
+                let actionMove = SKAction.moveTo(location, duration: 1)
+                nodeSet.children[index].runAction(actionMove)
+                selectedNode?.removeAllActions()
                 
                 
             }
@@ -381,6 +483,28 @@ class GameScene: SKScene {
                 selectedNode?.position = location
                 // Step 2. save touch data at index 0
                 history?.insert(TouchInfo(location:location, time:touch.timestamp),atIndex:0)
+            }
+            var xOffset:CGFloat = 1.0
+            var yOffset:CGFloat = 1.0
+            for var index = 0; index < nodeSet.children.count; ++index{
+                if location.x>nodeSet.children[index].position.x {
+                    xOffset = -1.0
+                }
+                if location.y>nodeSet.children[index].position.y {
+                    yOffset = -1.0
+                }
+                
+                // Create an action to move the invisibleControllerSprite.
+                // This will cause automatic orientation changes for the hero sprite
+                let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                
+                // Create an action to move the hero sprite to the touch location
+                let actionMove = SKAction.moveTo(location, duration: 1)
+                nodeSet.children[index].runAction(actionMove)
+                selectedNode?.removeAllActions()
+                
+                
             }
         }
     }
