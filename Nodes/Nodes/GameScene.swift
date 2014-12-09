@@ -8,8 +8,7 @@
 
 /* Todo:
 * TimeBonus
-* Powerups
-* Pause Button
+* Frenzy Bonus
 
 
 */
@@ -32,6 +31,11 @@ var nodeSet: SKNode!
 var nodeColor: Int!
 var centerRingColor: Int!
 var replayButton: SKSpriteNode!
+var pauseButton: SKSpriteNode!
+var nodePowerup: SKSpriteNode!
+var monoModeIndicator: SKSpriteNode!
+var slowTimeIndicator: SKSpriteNode!
+var clock: SKNode!
 
 // Colors
 let redColor = SKColor(red: 1, green: 28/255, blue: 105/255, alpha: 1)
@@ -88,17 +92,29 @@ class GameScene: SKScene {
         setupBackground()
         setupScoreLabel()
         setupHighScoreLabel()
-        setupTimeLabel()
+       
         setupCenterRing()
         spawnNodes()
+        spawnPowerups()
+        setupPauseButton()
         
         //        setupColorBar()
         
         nodeSet = SKNode()
         self.addChild(nodeSet)
+        
+        clock = SKNode()
+        self.addChild(clock)
+        
+         setupTimeLabel()
+        
         randomlyChangeRingColor()
         
         timeBonus = 0
+        
+        setupMonoIndicator()
+        
+        setupSlowTimeIndicator()
         
     }
     
@@ -156,7 +172,7 @@ class GameScene: SKScene {
         timerLabel.position = CGPointMake(self.frame.width / 2, self.frame.height / 1.05)
         timerLabel.text = String(timer)
         timerLabel.zPosition = 100
-        self.addChild(timerLabel)
+        clock.addChild(timerLabel)
         runTimer()
     }
     
@@ -170,12 +186,13 @@ class GameScene: SKScene {
             }
             let decrimentThenDelay = SKAction.sequence([decriment, delay])
             let decrimentThenDelayForTimer = SKAction.repeatAction(decrimentThenDelay, count: timer)
-            self.runAction(decrimentThenDelayForTimer, completion: {
+            clock.runAction(decrimentThenDelayForTimer, completion: {
                 // Call game over function
                 gameOver = true
                 self.setupReplayButton()
                 print("game over")
             })
+            
         }
     }
     
@@ -241,21 +258,78 @@ class GameScene: SKScene {
     }
     
     func resetScene(){
+        monoModeIndicator.removeFromParent()
+        slowTimeIndicator.removeFromParent()
+        setupMonoIndicator()
+        setupSlowTimeIndicator()
         replayButton.removeFromParent()
         invisibleControllerSprite.removeFromParent()
         gameOver = false
-        scoreLabel.removeFromParent()
-        timerLabel.removeFromParent()
         
-
-        setupScoreLabel()
-        setupTimeLabel()
-        timerLabel.text = String(timer)
-        spawnNodes()
-        timeBonus = 0
+        let delay = SKAction.waitForDuration(2)
+        nodeSet.runAction(delay, completion: {
+            nodeSet.removeAllChildren()
+        })
+        let delay2 = SKAction.waitForDuration(2)
+        nodeSet.runAction(delay2, completion: {
+            scoreLabel.removeFromParent()
+            timerLabel.removeFromParent()
+            self.setupScoreLabel()
+            self.setupTimeLabel()
+            timerLabel.text = String(timer)
+            self.spawnNodes()
+            self.spawnPowerups()
+            timeBonus = 0
+            clock.paused = false
+            timerLabel.fontColor = UIColor.blackColor()
+            timerLabel.fontSize = 22
+        })
+       
+        
+        for var index = 0; index < nodeSet.children.count; ++index{
+            (nodeSet.children[index] as SKSpriteNode).name = "Scored"
+        }
         
     }
     
+    func setupSlowTimeIndicator(){
+        slowTimeIndicator = SKSpriteNode(imageNamed: "nodeT")
+        //        slowTimeIndicator.anchorPoint = CGPointMake(0, 0)
+        slowTimeIndicator.position = CGPointMake(self.frame.width/15, self.frame.height / 10)
+        slowTimeIndicator.size = CGSizeMake(slowTimeIndicator.frame.width / 1.5, slowTimeIndicator.frame.height / 1.5)
+        slowTimeIndicator.zPosition = 199
+        slowTimeIndicator.alpha = 0.1
+        slowTimeIndicator.name = "slowTimeIndicator"
+        slowTimeIndicator.physicsBody = SKPhysicsBody(circleOfRadius: slowTimeIndicator.frame.width / 2)
+        slowTimeIndicator.physicsBody?.dynamic = false
+        self.addChild(slowTimeIndicator)
+    }
+    
+    func setupMonoIndicator(){
+        monoModeIndicator = SKSpriteNode(imageNamed: "nodeM")
+        //        monoModeIndicator.anchorPoint = CGPointMake(0, 0)
+        monoModeIndicator.position = CGPointMake(self.frame.width/15, self.frame.height / 30)
+        monoModeIndicator.size = CGSizeMake(monoModeIndicator.frame.width / 1.5, monoModeIndicator.frame.height / 1.5)
+        monoModeIndicator.alpha = 0.1
+        monoModeIndicator.zPosition = 200
+        monoModeIndicator.name = "monoModeIndicator"
+        monoModeIndicator.physicsBody = SKPhysicsBody(circleOfRadius:monoModeIndicator.frame.width / 2)
+        monoModeIndicator.physicsBody?.dynamic = false
+        self.addChild(monoModeIndicator)
+    }
+    
+    
+    func setupPauseButton() {
+        pauseButton = SKSpriteNode(imageNamed: "pauseButton")
+        pauseButton.size = CGSizeMake(pauseButton.size.width / 1.5 , pauseButton.size.height / 1.5)
+        pauseButton.position = CGPointMake(self.frame.width / 1.05, self.frame.height / 1.03)
+        pauseButton.zPosition = 201
+        pauseButton.name = "pauseButton"
+        
+        self.addChild(pauseButton)
+    }
+    
+    // Create Nodes
     func setupNodes(){
         
         nodeBall = SKSpriteNode(imageNamed: "nodeW")
@@ -369,6 +443,7 @@ class GameScene: SKScene {
         
     }
     
+    // Spawn Nodes
     func spawnNodes(){
         let spawn = SKAction.runBlock { () -> Void in
             self.setupNodes()
@@ -382,6 +457,88 @@ class GameScene: SKScene {
         
         invisibleControllerSprite.size = CGSizeMake(0, 0)
         self.addChild(invisibleControllerSprite)
+        
+        
+    }
+    
+    // Create Powerups
+    func setupPowerups(){
+        var powerupType = Int(arc4random_uniform(2))
+        switch powerupType {
+        case 0:
+            nodePowerup = SKSpriteNode(imageNamed: "nodeM")
+            nodePowerup.name = "nodeM"
+        default:
+            nodePowerup = SKSpriteNode(imageNamed: "nodeT")
+            nodePowerup.name = "nodeT"
+        }
+        
+        do {
+            columnMultiplier = (CGFloat(arc4random_uniform(100))) / 100
+        } while(columnMultiplier <= 0.1 || columnMultiplier >= 0.95)
+        
+        do {
+            rowMultiplier = (CGFloat(arc4random_uniform(100))) / 100
+        } while(rowMultiplier <= 0.1 || rowMultiplier >= 0.95)
+        
+        do {
+            sizeMultiplier = (CGFloat(arc4random_uniform(100))) / 100
+        } while(sizeMultiplier <= 0.5 || sizeMultiplier >= 1.0)
+        
+        nodePowerup.size = CGSizeMake(sizeMultiplier * nodePowerup.frame.width, sizeMultiplier *  nodePowerup.frame.height)
+        
+        nodePowerup.position = CGPointMake((columnMultiplier * self.frame.width), (rowMultiplier * self.frame.size.height))
+        nodePowerup.physicsBody = SKPhysicsBody(circleOfRadius: nodePowerup.frame.height/2)
+        nodePowerup.physicsBody?.categoryBitMask = nodeCategory
+        nodePowerup.physicsBody?.contactTestBitMask = nodeCategory
+        nodePowerup.physicsBody?.dynamic = true
+        nodePowerup.physicsBody?.affectedByGravity = false
+        nodePowerup.physicsBody?.mass = sizeMultiplier
+        nodePowerup.physicsBody?.restitution = 0.3
+        nodePowerup.physicsBody?.friction = 0.1
+        
+        
+        //        nodeBall.color = redColor
+        nodeSet.addChild(nodePowerup)
+        var signX = Int(arc4random_uniform(2))
+        var signY = Int(arc4random_uniform(2))
+        
+        if signX == 0 {
+            randomDX = Int(arc4random_uniform(100))
+        } else {
+            randomDX = Int(arc4random_uniform(100)) * -1
+        }
+        if signY == 0 {
+            randomDY = Int(arc4random_uniform(100))
+        } else {
+            randomDY = Int(arc4random_uniform(100)) * -1
+        }
+        nodePowerup.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+        
+        
+        nodePowerup.alpha = 0
+        let scale0 = SKAction.scaleTo(0, duration: 0)
+        nodePowerup.runAction(scale0)
+        let fadeIn = SKAction.fadeAlphaTo(1.0, duration: 0.2)
+        let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
+        let fadeAndScale = SKAction.group([fadeIn,scaleIn])
+        nodePowerup.runAction(fadeAndScale)
+        
+        let rangeForOrientation = SKRange(constantValue: CGFloat(M_2_PI*7))
+        nodePowerup.constraints = [SKConstraint.orientToNode(invisibleControllerSprite, offset: rangeForOrientation)]
+        
+    }
+    
+    func spawnPowerups(){
+        let spawn = SKAction.runBlock { () -> Void in
+            self.setupPowerups()
+        }
+        
+        let randomTime = Int(arc4random_uniform(20)+20)
+        let delay = SKAction.waitForDuration(NSTimeInterval(randomTime))
+        let spawnThenDelay = SKAction.sequence([delay, spawn])
+        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
+        self.runAction(spawnThenDelayForever)
         
         
     }
@@ -452,7 +609,7 @@ class GameScene: SKScene {
     //        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
     //            println("NodeImpact")
     //        }
-    //x
+    
     //    }
     
     
@@ -465,39 +622,120 @@ class GameScene: SKScene {
             let location = touch.locationInNode(self) as CGPoint
             var node: SKNode = self.nodeAtPoint(location)
             
-            if ((node.name == "nodeR") || (node.name == "nodeB") || (node.name == "nodeG")) {
-                // Step 1
-                selectedNode = node as? SKSpriteNode;
-                // Stop the sprite
-                selectedNode?.physicsBody?.velocity = CGVectorMake(0,0)
-                // Step 2: save information about the touch
-                history = [TouchInfo(location:location, time:touch.timestamp)]
-            }
-            
-            // Determine the new position for the invisible sprite:
-            var xOffset:CGFloat = 1.0
-            var yOffset:CGFloat = 1.0
-            for var index = 0; index < nodeSet.children.count; ++index{
-                if location.x>nodeSet.children[index].position.x {
-                    xOffset = -1.0
-                }
-                if location.y>nodeSet.children[index].position.y {
-                    yOffset = -1.0
+            // Press Pause Button
+            if (node.name == "pauseButton") {
+                if (self.scene?.paused == false) {
+                    self.scene?.paused = true
+                } else {
+                    self.scene?.paused = false
                 }
                 
-                // Create an action to move the invisibleControllerSprite.
-                // This will cause automatic orientation changes for the hero sprite
-                let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
-                invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                // Press Mono Button
+            } else if (node.name == "monoModeIndicator") {
+                if (monoModeIndicator.alpha == 1) {
+                    monoModeIndicator.alpha = 0.1
+                    for var index = 0; index < nodeSet.children.count; ++index{
+                        (nodeSet.children[index] as SKSpriteNode).color = centerRing.color
+                        
+                    }
+                    let fadeOut = SKAction.fadeAlphaTo(0.1, duration: 0.2)
+                    let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                    let fadeAndScale = SKAction.group([fadeOut,scaleIn])
+                    monoModeIndicator.runAction(fadeAndScale)
+                } else {
+                    let fadeOut = SKAction.fadeAlphaTo(0.1, duration: 0.2)
+                    let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                    let fadeAndScale = SKAction.group([fadeOut,scaleIn])
+                    monoModeIndicator.runAction(fadeAndScale)
+                }
                 
-                // Create an action to move the hero sprite to the touch location
-                let actionMove = SKAction.moveTo(location, duration: 1)
-                nodeSet.children[index].runAction(actionMove)
-                selectedNode?.removeAllActions()
+                // Tap A Mono Node
+            } else if (node.name == "nodeM") {
+                let fadeIn = SKAction.fadeAlphaTo(1.0, duration: 0.2)
+                let scaleIn = SKAction.scaleTo(1.5, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                let fadeAndScale = SKAction.group([fadeIn,scaleIn])
+                monoModeIndicator.runAction(fadeAndScale)
+                node.removeFromParent()
                 
-            }
-            if (node.name == "replayButton"){
-                resetScene()
+                
+                // Tap Clock Button
+            } else if (node.name == "slowTimeIndicator") {
+                if (slowTimeIndicator.alpha == 1) {
+                    slowTimeIndicator.alpha = 0.1
+                    timerLabel.fontSize = 30
+                    clock.paused = true
+                    timerLabel.fontColor = blueColor
+                    let delay = SKAction.waitForDuration(10)
+                    nodeSet.runAction(delay, completion: {
+                        clock.paused = false
+                        timerLabel.fontColor = UIColor.blackColor()
+                        timerLabel.fontSize = 22
+                        
+                    })
+                    
+                    let fadeOut = SKAction.fadeAlphaTo(0.1, duration: 0.2)
+                    let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                    let fadeAndScale = SKAction.group([fadeOut,scaleIn])
+                    slowTimeIndicator.runAction(fadeAndScale)
+                } else {
+                    let fadeOut = SKAction.fadeAlphaTo(0.1, duration: 0.2)
+                    let scaleIn = SKAction.scaleTo(1.0, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                    let fadeAndScale = SKAction.group([fadeOut,scaleIn])
+                    slowTimeIndicator.runAction(fadeAndScale)
+                }
+                
+                // Tap A Clock Node
+            } else if (node.name == "nodeT") {
+                let fadeIn = SKAction.fadeAlphaTo(1.0, duration: 0.2)
+                let scaleIn = SKAction.scaleTo(1.5, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 5.0)
+                let fadeAndScale = SKAction.group([fadeIn,scaleIn])
+                slowTimeIndicator.runAction(fadeAndScale)
+                node.removeFromParent()
+
+                // Tap any Node
+            } else {
+                if (self.scene?.paused == false) {
+                    if ((node.name == "nodeR") || (node.name == "nodeB") || (node.name == "nodeG")) {
+                        // Step 1
+                        selectedNode = node as? SKSpriteNode;
+                        // Stop the sprite
+                        selectedNode?.physicsBody?.velocity = CGVectorMake(0,0)
+                        // Step 2: save information about the touch
+                        history = [TouchInfo(location:location, time:touch.timestamp)]
+                    }
+                }
+                
+                // Determine the new position for the invisible sprite:
+                var xOffset:CGFloat = 1.0
+                var yOffset:CGFloat = 1.0
+                for var index = 0; index < nodeSet.children.count; ++index{
+                    if location.x>nodeSet.children[index].position.x {
+                        xOffset = -1.0
+                    }
+                    if location.y>nodeSet.children[index].position.y {
+                        yOffset = -1.0
+                    }
+                    
+                    // Create an action to move the invisibleControllerSprite.
+                    // This will cause automatic orientation changes for the hero sprite
+                    let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                    invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                    
+                    // Create an action to move the hero sprite to the touch location
+                    if (self.scene?.paused == false) {
+                        let actionMove = SKAction.moveTo(location, duration: 1)
+                        nodeSet.children[index].runAction(actionMove)
+                        selectedNode?.removeAllActions()
+                        
+                        
+                    }
+                    
+                    
+                }
+                if (node.name == "replayButton"){
+                    
+                    resetScene()
+                }
             }
         }
     }
@@ -530,10 +768,11 @@ class GameScene: SKScene {
                 invisibleControllerSprite.runAction(actionMoveInvisibleNode)
                 
                 // Create an action to move the hero sprite to the touch location
-                let actionMove = SKAction.moveTo(location, duration: 1)
-                nodeSet.children[index].runAction(actionMove)
-                selectedNode?.removeAllActions()
-                
+                if (self.scene?.paused == false){
+                    let actionMove = SKAction.moveTo(location, duration: 1)
+                    nodeSet.children[index].runAction(actionMove)
+                    selectedNode?.removeAllActions()
+                }
                 
             }
         }
@@ -550,7 +789,7 @@ class GameScene: SKScene {
             let maxIterations = 3
             var numElts:Int = min(history!.count, maxIterations)
             // Loop over touch history
-            for index in 1...numElts {
+            for index in 1...numElts{
                 let touchInfo = history![index]
                 let location = touchInfo.location
                 if let previousLocation = previousTouchInfo?.location {
