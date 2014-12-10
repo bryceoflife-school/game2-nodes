@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C8549C281A37DADB00F503C7 /* pauseButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8549C271A37DADB00F503C7 /* pauseButton@2x.png */; };
 		C87F88E61A33EDBA00AC99D5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87F88E51A33EDBA00AC99D5 /* AppDelegate.swift */; };
 		C87F88E81A33EDBA00AC99D5 /* GameScene.sks in Resources */ = {isa = PBXBuildFile; fileRef = C87F88E71A33EDBA00AC99D5 /* GameScene.sks */; };
 		C87F88EA1A33EDBA00AC99D5 /* GameScene.swift in Sources */ = {isa = PBXBuildFile; fileRef = C87F88E91A33EDBA00AC99D5 /* GameScene.swift */; };
@@ -24,7 +25,6 @@
 		C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89111A33EF5000AC99D5 /* nodeM@2x.png */; };
 		C87F891A1A33EF5000AC99D5 /* nodeR@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89121A33EF5000AC99D5 /* nodeR@2x.png */; };
 		C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C87F89131A33EF5000AC99D5 /* nodeT@2x.png */; };
-		C8977DE21A35836C00EE6D71 /* pauseButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8977DE01A35836C00EE6D71 /* pauseButton@2x.png */; };
 		C8977DE31A35836C00EE6D71 /* refreshButton@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8977DE11A35836C00EE6D71 /* refreshButton@2x.png */; };
 		C8E024641A34D7000057D34B /* centerRing@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E024631A34D7000057D34B /* centerRing@2x.png */; };
 		C8E024661A34DADF0057D34B /* nodeW.png in Resources */ = {isa = PBXBuildFile; fileRef = C8E024651A34DADF0057D34B /* nodeW.png */; };
@@ -41,6 +41,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		C8549C271A37DADB00F503C7 /* pauseButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pauseButton@2x.png"; sourceTree = "<group>"; };
 		C87F88E01A33EDBA00AC99D5 /* Nodes.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Nodes.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		C87F88E41A33EDBA00AC99D5 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		C87F88E51A33EDBA00AC99D5 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -62,7 +63,6 @@
 		C87F89111A33EF5000AC99D5 /* nodeM@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeM@2x.png"; sourceTree = "<group>"; };
 		C87F89121A33EF5000AC99D5 /* nodeR@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeR@2x.png"; sourceTree = "<group>"; };
 		C87F89131A33EF5000AC99D5 /* nodeT@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "nodeT@2x.png"; sourceTree = "<group>"; };
-		C8977DE01A35836C00EE6D71 /* pauseButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "pauseButton@2x.png"; sourceTree = "<group>"; };
 		C8977DE11A35836C00EE6D71 /* refreshButton@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "refreshButton@2x.png"; sourceTree = "<group>"; };
 		C8E024631A34D7000057D34B /* centerRing@2x.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "centerRing@2x.png"; sourceTree = "<group>"; };
 		C8E024651A34DADF0057D34B /* nodeW.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = nodeW.png; sourceTree = "<group>"; };
@@ -155,9 +155,9 @@
 				C87F890F1A33EF5000AC99D5 /* nodeB@2x.png */,
 				C87F89101A33EF5000AC99D5 /* nodeG@2x.png */,
 				C8E024651A34DADF0057D34B /* nodeW.png */,
+				C8549C271A37DADB00F503C7 /* pauseButton@2x.png */,
 				C8E024631A34D7000057D34B /* centerRing@2x.png */,
 				C87F89111A33EF5000AC99D5 /* nodeM@2x.png */,
-				C8977DE01A35836C00EE6D71 /* pauseButton@2x.png */,
 				C8977DE11A35836C00EE6D71 /* refreshButton@2x.png */,
 				C87F89121A33EF5000AC99D5 /* nodeR@2x.png */,
 				C87F89131A33EF5000AC99D5 /* nodeT@2x.png */,
@@ -254,11 +254,11 @@
 				C8E024641A34D7000057D34B /* centerRing@2x.png in Resources */,
 				C87F89161A33EF5000AC99D5 /* launchImage@2x.png in Resources */,
 				C87F89191A33EF5000AC99D5 /* nodeM@2x.png in Resources */,
+				C8549C281A37DADB00F503C7 /* pauseButton@2x.png in Resources */,
 				C87F891B1A33EF5000AC99D5 /* nodeT@2x.png in Resources */,
 				C87F89151A33EF5000AC99D5 /* background@2x.png in Resources */,
 				C87F89181A33EF5000AC99D5 /* nodeG@2x.png in Resources */,
 				C8977DE31A35836C00EE6D71 /* refreshButton@2x.png in Resources */,
-				C8977DE21A35836C00EE6D71 /* pauseButton@2x.png in Resources */,
 				C87F88EF1A33EDBA00AC99D5 /* Main.storyboard in Resources */,
 				C87F891A1A33EF5000AC99D5 /* nodeR@2x.png in Resources */,
 			);

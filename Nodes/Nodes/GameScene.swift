@@ -331,6 +331,8 @@ class GameScene: SKScene {
         pauseButton.position = CGPointMake(self.frame.width / 1.05, self.frame.height / 1.03)
         pauseButton.zPosition = 201
         pauseButton.name = "pauseButton"
+        pauseButton.colorBlendFactor = 1
+        pauseButton.color = UIColor.blackColor()
         
         self.addChild(pauseButton)
     }
@@ -671,6 +673,14 @@ class GameScene: SKScene {
         frenzySet.runAction(spawnThenDelayForever)
         let frenzyDelay = SKAction.waitForDuration(10)
         
+        // Color Background
+        background.runAction(SKAction.colorizeWithColor(SKColor(red: 52/255, green: 59/255, blue: 61/255, alpha: 1), colorBlendFactor: 1, duration: 2))
+        // Change HUD color
+        scoreLabel.fontColor = SKColor.whiteColor()
+        highScoreLabel.fontColor = SKColor.whiteColor()
+        timerLabel.fontColor = SKColor.whiteColor()
+        pauseButton.runAction(SKAction.colorizeWithColor(SKColor.whiteColor(), colorBlendFactor: 1, duration: 2))
+        
         // End frenzy mode
         frenzySet.runAction(frenzyDelay, completion: {
             frenzyModeOn = false
@@ -683,6 +693,14 @@ class GameScene: SKScene {
             for var index = 0; index < frenzySet.children.count; ++index{
                 (frenzySet.children[index] as SKNode).runAction(transitionRemove)
             }
+            // Re-Color Background
+            background.runAction(SKAction.colorizeWithColorBlendFactor(0, duration: 2))
+            
+            // Re-Change HUD color
+            scoreLabel.fontColor = SKColor.blackColor()
+            highScoreLabel.fontColor = SKColor.blackColor()
+            timerLabel.fontColor = SKColor.blackColor()
+            pauseButton.runAction(SKAction.colorizeWithColor(SKColor.blackColor(), colorBlendFactor: 1, duration: 2))
             
             frenzySet.removeAllActions()
         })
@@ -957,7 +975,7 @@ class GameScene: SKScene {
             updateScore()
         }
         
-        if frenzyBonus == 1 {
+        if frenzyBonus == 10 {
             frenzyBonus = 0
             frenzyMode()
         }
