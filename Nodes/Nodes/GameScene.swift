@@ -342,6 +342,7 @@ class GameScene: SKScene {
         
         nodeBall = SKSpriteNode(imageNamed: "nodeW")
         
+        
         do {
             columnMultiplier = (CGFloat(arc4random_uniform(100))) / 100
         } while(columnMultiplier <= 0.1 || columnMultiplier >= 0.95)
@@ -367,87 +368,91 @@ class GameScene: SKScene {
         nodeBall.physicsBody?.restitution = 0.3
         nodeBall.physicsBody?.friction = 0.1
         
-        
-        nodeColor = Int(arc4random_uniform(3))
-        switch nodeColor {
-        case 0:
-            nodeBall.color = redColor
-            nodeBall.name = "nodeR"
-            if frenzyModeOn == false {
-                nodeSet.addChild(nodeBall)
-            } else {
-                frenzySet.addChild(nodeBall)
+        do {
+            nodeColor = Int(arc4random_uniform(3))
+            switch nodeColor {
+            case 0:
+                nodeBall.color = redColor
+                nodeBall.name = "nodeR"
+                if frenzyModeOn == false {
+                    nodeSet.addChild(nodeBall)
+                } else {
+                    frenzySet.addChild(nodeBall)
+                }
+                var signX = Int(arc4random_uniform(2))
+                var signY = Int(arc4random_uniform(2))
+                
+                if signX == 0 {
+                    randomDX = Int(arc4random_uniform(100))
+                } else {
+                    randomDX = Int(arc4random_uniform(100)) * -1
+                }
+                if signY == 0 {
+                    randomDY = Int(arc4random_uniform(100))
+                } else {
+                    randomDY = Int(arc4random_uniform(100)) * -1
+                }
+                nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+                /*
+                circlePath = CGPathCreateWithEllipseInRect(CGRectMake(0 , 0, 300, 300), nil)
+                let followPath = SKAction.followPath(circlePath, asOffset: false, orientToPath: true, duration: 10)
+                let followPathForever = SKAction.repeatActionForever(followPath)
+                node.runAction(followPathForever)
+                */
+                
+            case 1:
+                nodeBall.color = blueColor
+                nodeBall.name = "nodeB"
+                if frenzyModeOn == false {
+                    nodeSet.addChild(nodeBall)
+                } else {
+                    frenzySet.addChild(nodeBall)
+                }
+                var signX = Int(arc4random_uniform(2))
+                var signY = Int(arc4random_uniform(2))
+                
+                if signX == 0 {
+                    randomDX = Int(arc4random_uniform(100))
+                } else {
+                    randomDX = Int(arc4random_uniform(100)) * -1
+                }
+                if signY == 0 {
+                    randomDY = Int(arc4random_uniform(100))
+                } else {
+                    randomDY = Int(arc4random_uniform(100)) * -1
+                }
+                nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+                
+                
+            case 2:
+                nodeBall.color = greenColor
+                nodeBall.name = "nodeG"
+                if frenzyModeOn == false {
+                    nodeSet.addChild(nodeBall)
+                } else {
+                    frenzySet.addChild(nodeBall)
+                }
+                var signX = Int(arc4random_uniform(2))
+                var signY = Int(arc4random_uniform(2))
+                
+                if signX == 0 {
+                    randomDX = Int(arc4random_uniform(100))
+                } else {
+                    randomDX = Int(arc4random_uniform(100)) * -1
+                }
+                if signY == 0 {
+                    randomDY = Int(arc4random_uniform(100))
+                } else {
+                    randomDY = Int(arc4random_uniform(100)) * -1
+                }
+                nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
+            default:
+                break
             }
-            var signX = Int(arc4random_uniform(2))
-            var signY = Int(arc4random_uniform(2))
-            
-            if signX == 0 {
-                randomDX = Int(arc4random_uniform(100))
-            } else {
-                randomDX = Int(arc4random_uniform(100)) * -1
-            }
-            if signY == 0 {
-                randomDY = Int(arc4random_uniform(100))
-            } else {
-                randomDY = Int(arc4random_uniform(100)) * -1
-            }
-            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
-            /*
-            circlePath = CGPathCreateWithEllipseInRect(CGRectMake(0 , 0, 300, 300), nil)
-            let followPath = SKAction.followPath(circlePath, asOffset: false, orientToPath: true, duration: 10)
-            let followPathForever = SKAction.repeatActionForever(followPath)
-            node.runAction(followPathForever)
-            */
-            
-        case 1:
-            nodeBall.color = blueColor
-            nodeBall.name = "nodeB"
-            if frenzyModeOn == false {
-                nodeSet.addChild(nodeBall)
-            } else {
-                frenzySet.addChild(nodeBall)
-            }
-            var signX = Int(arc4random_uniform(2))
-            var signY = Int(arc4random_uniform(2))
-            
-            if signX == 0 {
-                randomDX = Int(arc4random_uniform(100))
-            } else {
-                randomDX = Int(arc4random_uniform(100)) * -1
-            }
-            if signY == 0 {
-                randomDY = Int(arc4random_uniform(100))
-            } else {
-                randomDY = Int(arc4random_uniform(100)) * -1
-            }
-            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
-            
-            
-        case 2:
-            nodeBall.color = greenColor
-            nodeBall.name = "nodeG"
-            if frenzyModeOn == false {
-                nodeSet.addChild(nodeBall)
-            } else {
-                frenzySet.addChild(nodeBall)
-            }
-            var signX = Int(arc4random_uniform(2))
-            var signY = Int(arc4random_uniform(2))
-            
-            if signX == 0 {
-                randomDX = Int(arc4random_uniform(100))
-            } else {
-                randomDX = Int(arc4random_uniform(100)) * -1
-            }
-            if signY == 0 {
-                randomDY = Int(arc4random_uniform(100))
-            } else {
-                randomDY = Int(arc4random_uniform(100)) * -1
-            }
-            nodeBall.physicsBody?.velocity = CGVector(dx: randomDX, dy: randomDY)
-        default:
-            break
-        }
+        } while ((nodeBall.position.x < centerRing.frame.minX)
+            && (nodeBall.position.x > centerRing.frame.maxX)
+            && (nodeBall.position.y < centerRing.frame.minY)
+            && (nodeBall.position.y > centerRing.frame.maxY))
         
         
         nodeBall.alpha = 0
