@@ -7,7 +7,6 @@
 //
 
 /* Todo:
-* TimeBonus
 * Frenzy Bonus
 
 
@@ -36,6 +35,7 @@ var nodePowerup: SKSpriteNode!
 var monoModeIndicator: SKSpriteNode!
 var slowTimeIndicator: SKSpriteNode!
 var clock: SKNode!
+var frenzySet: SKNode!
 
 // Colors
 let redColor = SKColor(red: 1, green: 28/255, blue: 105/255, alpha: 1)
@@ -45,7 +45,8 @@ let blueColor = SKColor(red: 62/225, green: 197/255, blue: 255/255, alpha: 1)
 // GameStates
 var score: Int!
 var highScore = NSInteger()
-var timeBonus: Int!
+var frenzyBonus: Int!
+var frenzyModeOn: Bool = false
 var haveMPowerup: Bool!
 var haveTPowerup: Bool!
 //var colorBarProgress: Int!
@@ -80,6 +81,8 @@ let worldCategory: UInt32 = 1 << 1
 //let anchorCategory: UInt32 = 1 << 2
 
 
+
+
 class GameScene: SKScene {
     override func didMoveToView(view: SKView) {
         /* Setup your scene here */
@@ -92,7 +95,7 @@ class GameScene: SKScene {
         setupBackground()
         setupScoreLabel()
         setupHighScoreLabel()
-       
+        
         setupCenterRing()
         spawnNodes()
         spawnPowerups()
@@ -106,11 +109,14 @@ class GameScene: SKScene {
         clock = SKNode()
         self.addChild(clock)
         
-         setupTimeLabel()
+        frenzySet = SKNode()
+        self.addChild(frenzySet)
+        
+        setupTimeLabel()
         
         randomlyChangeRingColor()
         
-        timeBonus = 0
+        frenzyBonus = 0
         
         setupMonoIndicator()
         
@@ -133,7 +139,7 @@ class GameScene: SKScene {
         scoreLabel = SKLabelNode(fontNamed: "Avenir Next")
         scoreLabel.fontColor = UIColor.blackColor()
         scoreLabel.fontSize = 22
-        scoreLabel.position = CGPointMake(self.frame.width / 25, self.frame.height / 1.05)
+        scoreLabel.position = CGPointMake(self.frame.width / 10, self.frame.height / 1.05)
         scoreLabel.text = String(score)
         scoreLabel.zPosition = 100
         self.addChild(scoreLabel)
@@ -147,7 +153,7 @@ class GameScene: SKScene {
         highScoreLabel.fontColor = UIColor.blackColor()
         highScoreLabel.alpha = 0.5
         highScoreLabel.fontSize = 22
-        highScoreLabel.position = CGPointMake(self.frame.width / 25, self.frame.height / 1.1)
+        highScoreLabel.position = CGPointMake(self.frame.width / 10, self.frame.height / 1.1)
         highScoreLabel.text = String(highScore)
         highScoreLabel.zPosition = 100
         self.addChild(highScoreLabel)
@@ -279,12 +285,12 @@ class GameScene: SKScene {
             timerLabel.text = String(timer)
             self.spawnNodes()
             self.spawnPowerups()
-            timeBonus = 0
+            frenzyBonus = 0
             clock.paused = false
             timerLabel.fontColor = UIColor.blackColor()
             timerLabel.fontSize = 22
         })
-       
+        
         
         for var index = 0; index < nodeSet.children.count; ++index{
             (nodeSet.children[index] as SKSpriteNode).name = "Scored"
@@ -365,7 +371,11 @@ class GameScene: SKScene {
         case 0:
             nodeBall.color = redColor
             nodeBall.name = "nodeR"
-            nodeSet.addChild(nodeBall)
+            if frenzyModeOn == false {
+                nodeSet.addChild(nodeBall)
+            } else {
+                frenzySet.addChild(nodeBall)
+            }
             var signX = Int(arc4random_uniform(2))
             var signY = Int(arc4random_uniform(2))
             
@@ -390,7 +400,11 @@ class GameScene: SKScene {
         case 1:
             nodeBall.color = blueColor
             nodeBall.name = "nodeB"
-            nodeSet.addChild(nodeBall)
+            if frenzyModeOn == false {
+                nodeSet.addChild(nodeBall)
+            } else {
+                frenzySet.addChild(nodeBall)
+            }
             var signX = Int(arc4random_uniform(2))
             var signY = Int(arc4random_uniform(2))
             
@@ -410,7 +424,11 @@ class GameScene: SKScene {
         case 2:
             nodeBall.color = greenColor
             nodeBall.name = "nodeG"
-            nodeSet.addChild(nodeBall)
+            if frenzyModeOn == false {
+                nodeSet.addChild(nodeBall)
+            } else {
+                frenzySet.addChild(nodeBall)
+            }
             var signX = Int(arc4random_uniform(2))
             var signY = Int(arc4random_uniform(2))
             
@@ -449,6 +467,7 @@ class GameScene: SKScene {
             self.setupNodes()
             gameBegan = true
         }
+        
         
         let delay = SKAction.waitForDuration(1.5)
         let spawnThenDelay = SKAction.sequence([spawn, delay])
@@ -545,6 +564,7 @@ class GameScene: SKScene {
     
     func updateScore() {
         
+        // Frenzy Mode off
         for var index = 0; index < nodeSet.children.count; ++index{
             
             if ((nodeSet.children[index].position.x > centerRing.frame.minX)
@@ -572,7 +592,7 @@ class GameScene: SKScene {
                                 score = score + 1
                                 (nodeSet.children[index] as SKNode).name = "Scored"
                                 scoreLabel.text = String(score)
-                                timeBonus = timeBonus + 1
+                                frenzyBonus = frenzyBonus + 1
                                 updateHighScore()
                             }
                             
@@ -592,7 +612,7 @@ class GameScene: SKScene {
                                     score = score - 1
                                     (nodeSet.children[index] as SKNode).name = "Deducted"
                                     scoreLabel.text = String(score)
-                                    timeBonus = 0
+                                    frenzyBonus = 0
                                     updateHighScore()
                                 }
                             }
@@ -600,6 +620,72 @@ class GameScene: SKScene {
                     }
             }
         }
+        
+        // Frenzy Mode on
+        for var index = 0; index < frenzySet.children.count; ++index{
+            
+            if ((frenzySet.children[index].position.x > centerRing.frame.minX)
+                && (frenzySet.children[index].position.x < centerRing.frame.maxX)
+                && (frenzySet.children[index].position.y > centerRing.frame.minY)
+                && (frenzySet.children[index].position.y < centerRing.frame.maxY)) {
+                    
+                    // If Colors match
+                    if frenzySet.children[index].color == centerRing.color {
+                        
+                        
+                        let fadeOut = SKAction.fadeAlphaTo(0.0, duration: 0.2)
+                        let scaleOut = SKAction.scaleTo(1.5, duration: 0.5, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
+                        let removeNode = SKAction.removeFromParent()
+                        let fadeAndScale = SKAction.group([fadeOut,scaleOut])
+                        let transitionRemove = SKAction.sequence([fadeAndScale,removeNode])
+                        frenzySet.children[index].runAction(transitionRemove)
+                        
+                        scoreLabel.runAction(SKAction.sequence([SKAction.scaleTo(1.5, duration:NSTimeInterval(0.1)), SKAction.scaleTo(1.0, duration:NSTimeInterval(0.1))]))
+                        
+                        
+                        
+                        if frenzySet.children[index].name != "Scored" {
+                            if !gameOver{
+                                score = score + 1
+                                (frenzySet.children[index] as SKNode).name = "Scored"
+                                scoreLabel.text = String(score)
+                                updateHighScore()
+                            }
+                            
+                        }
+                    }
+            }
+        }
+        
+    }
+    
+    // Frenzy Mode
+    func frenzyMode() {
+        frenzyModeOn = true
+        let spawn = SKAction.runBlock { () -> Void in
+            self.setupNodes()
+        }
+        let delay = SKAction.waitForDuration(0.2)
+        let spawnThenDelay = SKAction.sequence([spawn, delay])
+        let spawnThenDelayForever = SKAction.repeatActionForever(spawnThenDelay)
+        frenzySet.runAction(spawnThenDelayForever)
+        let frenzyDelay = SKAction.waitForDuration(10)
+        
+        // End frenzy mode
+        frenzySet.runAction(frenzyDelay, completion: {
+            frenzyModeOn = false
+            let delayBeforeDelete = SKAction.waitForDuration(5)
+            let fadeOut = SKAction.fadeAlphaTo(0.0, duration: 0.2)
+            let scaleOut = SKAction.scaleTo(0, duration: 1.0, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
+            let removeNode = SKAction.removeFromParent()
+            let fadeAndScale = SKAction.group([fadeOut,scaleOut])
+            let transitionRemove = SKAction.sequence([delayBeforeDelete,fadeAndScale,removeNode])
+            for var index = 0; index < frenzySet.children.count; ++index{
+                (frenzySet.children[index] as SKNode).runAction(transitionRemove)
+            }
+            
+            frenzySet.removeAllActions()
+        })
     }
     
     
@@ -691,7 +777,7 @@ class GameScene: SKScene {
                 let fadeAndScale = SKAction.group([fadeIn,scaleIn])
                 slowTimeIndicator.runAction(fadeAndScale)
                 node.removeFromParent()
-
+                
                 // Tap any Node
             } else {
                 if (self.scene?.paused == false) {
@@ -708,6 +794,8 @@ class GameScene: SKScene {
                 // Determine the new position for the invisible sprite:
                 var xOffset:CGFloat = 1.0
                 var yOffset:CGFloat = 1.0
+                
+                // Frenzy mode off
                 for var index = 0; index < nodeSet.children.count; ++index{
                     if location.x>nodeSet.children[index].position.x {
                         xOffset = -1.0
@@ -725,11 +813,31 @@ class GameScene: SKScene {
                     if (self.scene?.paused == false) {
                         let actionMove = SKAction.moveTo(location, duration: 1)
                         nodeSet.children[index].runAction(actionMove)
-                        selectedNode?.removeAllActions()
-                        
                         
                     }
+                    selectedNode?.removeAllActions()
+                }
+                
+                // Frenzy Mode on
+                for var index = 0; index < frenzySet.children.count; ++index{
+                    if location.x > frenzySet.children[index].position.x {
+                        xOffset = -1.0
+                    }
+                    if location.y > frenzySet.children[index].position.y {
+                        yOffset = -1.0
+                    }
                     
+                    // Create an action to move the invisibleControllerSprite.
+                    // This will cause automatic orientation changes for the hero sprite
+                    let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                    invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                    
+                    // Create an action to move the hero sprite to the touch location
+                    if (self.scene?.paused == false) {
+                        let actionMove = SKAction.moveTo(location, duration: 1)
+                        frenzySet.children[index].runAction(actionMove)
+                        selectedNode?.removeAllActions()
+                    }
                     
                 }
                 if (node.name == "replayButton"){
@@ -754,6 +862,8 @@ class GameScene: SKScene {
             }
             var xOffset:CGFloat = 1.0
             var yOffset:CGFloat = 1.0
+            
+            // Frenzy mode off
             for var index = 0; index < nodeSet.children.count; ++index{
                 if location.x>nodeSet.children[index].position.x {
                     xOffset = -1.0
@@ -774,6 +884,29 @@ class GameScene: SKScene {
                     selectedNode?.removeAllActions()
                 }
                 
+            }
+            // Frenzy Mode on
+            
+            for var index = 0; index < frenzySet.children.count; ++index{
+                if location.x > frenzySet.children[index].position.x {
+                    xOffset = -1.0
+                }
+                if location.y > frenzySet.children[index].position.y {
+                    yOffset = -1.0
+                }
+                
+                // Create an action to move the invisibleControllerSprite.
+                // This will cause automatic orientation changes for the hero sprite
+                let actionMoveInvisibleNode = SKAction.moveTo(CGPointMake(location.x - xOffset, location.y - yOffset), duration: 0.2)
+                invisibleControllerSprite.runAction(actionMoveInvisibleNode)
+                
+                // Create an action to move the hero sprite to the touch location
+                if (self.scene?.paused == false) {
+                    let actionMove = SKAction.moveTo(location, duration: 1)
+                    frenzySet.children[index].runAction(actionMove)
+                    selectedNode?.removeAllActions()
+                    
+                }
             }
         }
     }
@@ -824,6 +957,10 @@ class GameScene: SKScene {
             updateScore()
         }
         
+        if frenzyBonus == 1 {
+            frenzyBonus = 0
+            frenzyMode()
+        }
         
         
         
