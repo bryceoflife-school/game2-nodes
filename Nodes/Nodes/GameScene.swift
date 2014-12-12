@@ -100,7 +100,6 @@ class GameScene: SKScene {
         setupBackground()
         setupScoreLabel()
         setupHighScoreLabel()
-        
         setupCenterRing()
         spawnNodes()
         spawnPowerups()
@@ -134,11 +133,11 @@ class GameScene: SKScene {
     
     // Tests
     func runTests() {
-//        testThatHighScoreisMax()
-//        testThatGameEndsOnTimeUp()
-//        testThatNodesGeneratesWithinFrame()
-//        testThatNodesMatchRing()
-//        testThatTenIsFrenzy()
+        testThatHighScoreisMax()
+        testThatGameEndsOnTimeUp()
+        testThatNodesGeneratesWithinFrame()
+        testThatNodesMatchRing()
+        testThatTenIsFrenzy()
 //        testThatMonoChangesColor()
 //        testThatNodesMovesToTouch()
     }
