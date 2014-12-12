@@ -54,6 +54,7 @@ var timer: Int!
 var gameOver = false
 var gameBegan = false
 var location: CGPoint!
+var monoModeOn = false
 
 // Random Variable
 var columnMultiplier: CGFloat!
@@ -126,6 +127,8 @@ class GameScene: SKScene {
         
         setupSlowTimeIndicator()
         
+        monoModeOn = false
+        
        
     }
     
@@ -135,7 +138,8 @@ class GameScene: SKScene {
 //        testThatGameEndsOnTimeUp()
 //        testThatNodesGeneratesWithinFrame()
 //        testThatNodesMatchRing()
-        testThatTenIsFrenzy()
+//        testThatTenIsFrenzy()
+//        testThatMonoChangesColor()
 //        testThatNodesMovesToTouch()
     }
     // Test that high score is maximum score
@@ -236,6 +240,36 @@ class GameScene: SKScene {
         }
         return shouldBeTrue
     }
+    
+    // MonoMode turns them all the same color
+    func testThatMonoChangesColor() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            if !monoModeOn
+                && ((nodeSet.childNodeWithName("nodeR") as SKSpriteNode).color == centerRing.color){
+                println("Fail: MonoMode not on but all nodes same color.")
+            } else if monoModeOn
+                && ((nodeSet.childNodeWithName("nodeR") as SKSpriteNode).color != centerRing.color)
+//                && ((nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color != centerRing.color)
+//                && ((nodeSet.childNodeWithName("nodeB") as SKSpriteNode).color != centerRing.color)
+                && ((nodeSet.childNodeWithName("nodeR") as SKSpriteNode).color != (nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color)
+                && ((nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color != (nodeSet.childNodeWithName("nodeB") as SKSpriteNode).color){
+                println("Fail: MonoMode is on but all nodes not same color.")
+            } else if !monoModeOn
+                && ((nodeSet.childNodeWithName("nodeR") as SKSpriteNode).color != centerRing.color)
+                && ((nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color != centerRing.color)
+                && ((nodeSet.childNodeWithName("nodeB") as SKSpriteNode).color != centerRing.color)
+                && ((nodeSet.childNodeWithName("nodeR") as SKSpriteNode).color != (nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color)
+                && ((nodeSet.childNodeWithName("nodeG") as SKSpriteNode).color != (nodeSet.childNodeWithName("nodeB") as SKSpriteNode).color){
+                println("Pass: MonoMode is not on and all nodes not same color.")
+            } else {
+                println("Pass: Monomode is on and all nodes same color.")
+            }
+        
+        }
+        return shouldBeTrue
+    }
+
 
 //    func testThatNodesMovesToTouch() -> Bool{
 //        shouldBeTrue = false
@@ -402,6 +436,7 @@ class GameScene: SKScene {
         replayButton.removeFromParent()
         invisibleControllerSprite.removeFromParent()
         gameOver = false
+        monoModeOn = false
         
         let delay = SKAction.waitForDuration(2)
         nodeSet.runAction(delay, completion: {
@@ -617,6 +652,10 @@ class GameScene: SKScene {
         
         invisibleControllerSprite.size = CGSizeMake(0, 0)
         self.addChild(invisibleControllerSprite)
+        
+        if monoModeOn == true{
+            monoModeOn = false
+        }
         
         
     }
@@ -849,14 +888,6 @@ class GameScene: SKScene {
         })
     }
     
-    // Function to handle object contact
-    //    func didBeginContact(contact: SKPhysicsContact) {
-    //        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
-    //            println("NodeImpact")
-    //        }
-    
-    //    }
-    
     // Handle Touch Begining
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         /* Called when a touch begins */
@@ -877,6 +908,7 @@ class GameScene: SKScene {
             } else if (node.name == "monoModeIndicator") {
                 if (monoModeIndicator.alpha == 1) {
                     monoModeIndicator.alpha = 0.1
+                    monoModeOn = true
                     for var index = 0; index < nodeSet.children.count; ++index{
                         (nodeSet.children[index] as SKSpriteNode).color = centerRing.color
                         
@@ -1125,8 +1157,6 @@ class GameScene: SKScene {
         if frenzyBonus == 10 {
             frenzyMode()
             frenzyBonus = 0
-            
-            
         }
         
         // Run Tests
