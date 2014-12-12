@@ -134,7 +134,8 @@ class GameScene: SKScene {
 //        testThatHighScoreisMax()
 //        testThatGameEndsOnTimeUp()
 //        testThatNodesGeneratesWithinFrame()
-        testThatNodesMatchRing()
+//        testThatNodesMatchRing()
+        testThatTenIsFrenzy()
 //        testThatNodesMovesToTouch()
     }
     // Test that high score is maximum score
@@ -194,23 +195,46 @@ class GameScene: SKScene {
         shouldBeTrue = false
         if nodeHasSpawned != nil{
             for var index = 0; index < nodeSet.children.count; ++index{
+                if ((nodeSet.children[index].position.x > centerRing.frame.minX)
+                    && (nodeSet.children[index].position.x < centerRing.frame.maxX)
+                    && (nodeSet.children[index].position.y > centerRing.frame.minY)
+                    && (nodeSet.children[index].position.y < centerRing.frame.maxY)) {
                 
                 if (nodeSet.children[index] as SKSpriteNode).name == "Scored"
-                    && (nodeSet.children[index] as SKSpriteNode).color != centerRingColor {
+                    && (nodeSet.children[index] as SKSpriteNode).color != centerRing.color {
                         println("Fail: Node does not match ring color but was scored")
                 } else if (nodeSet.children[index] as SKSpriteNode).name != "Scored"
-                    && (nodeSet.children[index] as SKSpriteNode).color == centerRingColor {
+                    && (nodeSet.children[index] as SKSpriteNode).color == centerRing.color {
                         println("Fail: Node does match ring color but was not scored")
                 } else if (nodeSet.children[index] as SKSpriteNode).name == "Scored"
-                    && (nodeSet.children[index] as SKSpriteNode).color == centerRingColor {
+                    && (nodeSet.children[index] as SKSpriteNode).color == centerRing.color {
                         println("Pass: Node does match ring color and was scored")
                 } else {
                     shouldBeTrue = false
                     println("Pass: Node does not match ring color and was not scored")
                 }
+                }
             }
         }
          return shouldBeTrue
+    }
+    
+    // Test that ten in a row goes into frenzy
+    func testThatTenIsFrenzy() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            if !frenzyModeOn && (frenzyBonus == 10) {
+                println("Fail: FrenzyBonus is at 10 but frenzy mode not activated.")
+            } else if frenzyModeOn && ((frenzyBonus < 10) && (frenzyBonus != 0)) {
+                println("Fail: FrenzyBonus is less than 10 but frenzy mode activated.")
+            } else if !frenzyModeOn && ((frenzyBonus < 10) && (frenzyBonus != 0)) {
+                println("Pass: FrenzyBonus is less than 10 and frenzy mode not activated.")
+            } else {
+                println("Pass: FrenzyBonus is at 10 and frenzy mode activated.")
+            }
+            
+        }
+        return shouldBeTrue
     }
 
 //    func testThatNodesMovesToTouch() -> Bool{
@@ -801,6 +825,7 @@ class GameScene: SKScene {
         // End frenzy mode
         frenzySet.runAction(frenzyDelay, completion: {
             frenzyModeOn = false
+            
             let delayBeforeDelete = SKAction.waitForDuration(5)
             let fadeOut = SKAction.fadeAlphaTo(0.0, duration: 0.2)
             let scaleOut = SKAction.scaleTo(0, duration: 1.0, delay: 0, usingSpringWithDamping: 0.5, initialSpringVelocity: 0)
@@ -820,6 +845,7 @@ class GameScene: SKScene {
             pauseButton.runAction(SKAction.colorizeWithColor(SKColor.blackColor(), colorBlendFactor: 1, duration: 2))
             
             frenzySet.removeAllActions()
+            
         })
     }
     
@@ -1097,8 +1123,10 @@ class GameScene: SKScene {
         }
         
         if frenzyBonus == 10 {
-            frenzyBonus = 0
             frenzyMode()
+            frenzyBonus = 0
+            
+            
         }
         
         // Run Tests
