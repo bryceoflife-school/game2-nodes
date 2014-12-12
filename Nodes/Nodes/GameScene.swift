@@ -49,10 +49,11 @@ var frenzyBonus: Int!
 var frenzyModeOn: Bool = false
 var haveMPowerup: Bool!
 var haveTPowerup: Bool!
-//var colorBarProgress: Int!
+var nodeHasSpawned: Bool!
 var timer: Int!
 var gameOver = false
 var gameBegan = false
+var location: CGPoint!
 
 // Random Variable
 var columnMultiplier: CGFloat!
@@ -74,6 +75,9 @@ struct TouchInfo {
 }
 var selectedNode:SKSpriteNode?
 var history:[TouchInfo]?
+
+//Testing Variables
+var shouldBeTrue = false
 
 // Collision Contact Categories
 let nodeCategory: UInt32 = 1 << 0
@@ -122,7 +126,106 @@ class GameScene: SKScene {
         
         setupSlowTimeIndicator()
         
+       
     }
+    
+    // Tests
+    func runTests() {
+//        testThatHighScoreisMax()
+//        testThatGameEndsOnTimeUp()
+//        testThatNodesGeneratesWithinFrame()
+        testThatNodesMatchRing()
+//        testThatNodesMovesToTouch()
+    }
+    // Test that high score is maximum score
+    func testThatHighScoreisMax() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            if highScore >= score {
+                shouldBeTrue = true
+                println("Pass: High score is greater or equal to current score")
+            } else {
+                println("Fail: High score is not so high.")
+                
+            }
+            
+        }
+        return shouldBeTrue
+    }
+
+    // Test that timer ends game
+    func testThatGameEndsOnTimeUp() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            if !gameOver && (timer == 0) {
+                println("Fail: Time is up but game is not over.")
+            } else if gameOver && (timer > 0) {
+                println("Fail: Time is not but but game is over.")
+            } else if !gameOver && (timer > 0) {
+                println("Pass: Time is not up and game is not over")
+            } else {
+                println("Pass: Time is up and game is over.")
+            }
+            
+        }
+        return shouldBeTrue
+    }
+    
+    // Test that nodes are generated within frame
+    func testThatNodesGeneratesWithinFrame() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            if nodeSet.children.last?.position.x > self.frame.minX
+                && nodeSet.children.last?.position.x < self.frame.maxX
+                && nodeSet.children.last?.position.y > self.frame.minY
+                && nodeSet.children.last?.position.y < self.frame.maxY{
+                    shouldBeTrue = true
+                    println("Pass: Node is generated within the frame")
+            } else {
+                shouldBeTrue = false
+                println("Fail: Node is not within the frame")
+            }
+        }
+        return shouldBeTrue
+    }
+
+    // Test that nodes match colored ring to score
+    func testThatNodesMatchRing() -> Bool{
+        shouldBeTrue = false
+        if nodeHasSpawned != nil{
+            for var index = 0; index < nodeSet.children.count; ++index{
+                
+                if (nodeSet.children[index] as SKSpriteNode).name == "Scored"
+                    && (nodeSet.children[index] as SKSpriteNode).color != centerRingColor {
+                        println("Fail: Node does not match ring color but was scored")
+                } else if (nodeSet.children[index] as SKSpriteNode).name != "Scored"
+                    && (nodeSet.children[index] as SKSpriteNode).color == centerRingColor {
+                        println("Fail: Node does match ring color but was not scored")
+                } else if (nodeSet.children[index] as SKSpriteNode).name == "Scored"
+                    && (nodeSet.children[index] as SKSpriteNode).color == centerRingColor {
+                        println("Pass: Node does match ring color and was scored")
+                } else {
+                    shouldBeTrue = false
+                    println("Pass: Node does not match ring color and was not scored")
+                }
+            }
+        }
+         return shouldBeTrue
+    }
+
+//    func testThatNodesMovesToTouch() -> Bool{
+//        shouldBeTrue = false
+//        if nodeHasSpawned != nil{
+//            for var index = 0; index < nodeSet.children.count; ++index{
+//                if location.x == nodeSet.children[index].position.x {
+//                    println("Pass: Box moves to finger")
+//                }
+//            }
+//        }
+//        return shouldBeTrue
+//    }
+
+
     
     // Add Background
     func setupBackground() {
@@ -145,6 +248,7 @@ class GameScene: SKScene {
         self.addChild(scoreLabel)
     }
     
+    // Display High Score Text
     func setupHighScoreLabel() {
         if highScore <= score {
             highScore = score
@@ -168,8 +272,7 @@ class GameScene: SKScene {
         }
     }
     
-    
-    
+    // Display Clock Text
     func setupTimeLabel(){
         timer = 90
         timerLabel = SKLabelNode(fontNamed: "Avenir Next")
@@ -182,7 +285,7 @@ class GameScene: SKScene {
         runTimer()
     }
     
-    
+    // Setup Clock
     func runTimer(){
         if timer > 0 {
             let delay = SKAction.waitForDuration(1)
@@ -202,6 +305,7 @@ class GameScene: SKScene {
         }
     }
     
+    // Create Center Ring
     func setupCenterRing(){
         centerRing = SKSpriteNode(imageNamed: "centerRing")
         centerRing.position = CGPointMake(self.frame.width / 2, self.frame.height / 2)
@@ -227,6 +331,7 @@ class GameScene: SKScene {
         
     }
     
+    // Rotate through ring colors
     func randomlyChangeRingColor() {
         var interval = Int(arc4random_uniform(5) + 5)
         let waitForInterval = SKAction.waitForDuration(NSTimeInterval(interval))
@@ -253,6 +358,7 @@ class GameScene: SKScene {
         
     }
     
+    // Create Replay Button
     func setupReplayButton() {
         replayButton = SKSpriteNode(imageNamed: "refreshButton")
         replayButton.size = CGSizeMake(replayButton.size.width , replayButton.size.height)
@@ -263,6 +369,7 @@ class GameScene: SKScene {
         self.addChild(replayButton)
     }
     
+    // Reset Everything on Replay Press
     func resetScene(){
         monoModeIndicator.removeFromParent()
         slowTimeIndicator.removeFromParent()
@@ -298,6 +405,7 @@ class GameScene: SKScene {
         
     }
     
+    // Create Freeze Time Indocator
     func setupSlowTimeIndicator(){
         slowTimeIndicator = SKSpriteNode(imageNamed: "nodeT")
         //        slowTimeIndicator.anchorPoint = CGPointMake(0, 0)
@@ -311,6 +419,7 @@ class GameScene: SKScene {
         self.addChild(slowTimeIndicator)
     }
     
+    // Create Mono Mode Indicator
     func setupMonoIndicator(){
         monoModeIndicator = SKSpriteNode(imageNamed: "nodeM")
         //        monoModeIndicator.anchorPoint = CGPointMake(0, 0)
@@ -324,7 +433,7 @@ class GameScene: SKScene {
         self.addChild(monoModeIndicator)
     }
     
-    
+    // Create Pause Button
     func setupPauseButton() {
         pauseButton = SKSpriteNode(imageNamed: "pauseButton")
         pauseButton.size = CGSizeMake(pauseButton.size.width / 1.5 , pauseButton.size.height / 1.5)
@@ -468,11 +577,12 @@ class GameScene: SKScene {
         
     }
     
-    // Spawn Nodes
+    // Add Nodes to Scene
     func spawnNodes(){
         let spawn = SKAction.runBlock { () -> Void in
             self.setupNodes()
             gameBegan = true
+            nodeHasSpawned = true
         }
         
         
@@ -555,6 +665,7 @@ class GameScene: SKScene {
         
     }
     
+    // Add Powerups to Scene
     func spawnPowerups(){
         let spawn = SKAction.runBlock { () -> Void in
             self.setupPowerups()
@@ -569,6 +680,7 @@ class GameScene: SKScene {
         
     }
     
+    // Update Score
     func updateScore() {
         
         // Frenzy Mode off
@@ -711,8 +823,6 @@ class GameScene: SKScene {
         })
     }
     
-    
-    
     // Function to handle object contact
     //    func didBeginContact(contact: SKPhysicsContact) {
     //        if ((contact.bodyA.contactTestBitMask & nodeCategory) == nodeCategory || ( contact.bodyB.contactTestBitMask & nodeCategory ) == nodeCategory){
@@ -721,14 +831,12 @@ class GameScene: SKScene {
     
     //    }
     
-    
-    
-    
+    // Handle Touch Begining
     override func touchesBegan(touches: NSSet, withEvent event: UIEvent) {
         /* Called when a touch begins */
         
         for touch: AnyObject in touches {
-            let location = touch.locationInNode(self) as CGPoint
+            location = touch.locationInNode(self) as CGPoint
             var node: SKNode = self.nodeAtPoint(location)
             
             // Press Pause Button
@@ -871,9 +979,10 @@ class GameScene: SKScene {
         }
     }
     
+    // Handle Touch Moving
     override func touchesMoved(touches: NSSet, withEvent event: UIEvent) {
         for touch: AnyObject in touches {
-            let location = touch.locationInNode(self) as CGPoint
+            location = touch.locationInNode(self) as CGPoint
             
             var node: SKNode = self.nodeAtPoint(location)
             
@@ -934,9 +1043,14 @@ class GameScene: SKScene {
         }
     }
     
+    // Handle Touch Ending
     override func touchesEnded(touches: NSSet, withEvent event: UIEvent) {
         let touch = touches.anyObject() as UITouch
-        let location = touch.locationInNode(self)
+        location = touch.locationInNode(self)
+        if ((location.x < centerRing.frame.minX)
+            || (location.x > centerRing.frame.maxX)
+            || (location.y < centerRing.frame.minY)
+            || (location.y > centerRing.frame.maxY)) {
         if (selectedNode != nil && history!.count > 1) {
             var vx:CGFloat = 0.0
             var vy:CGFloat = 0.0
@@ -967,10 +1081,12 @@ class GameScene: SKScene {
             // Step 5
             selectedNode = nil
             history = nil
+                }
         }
         
     }
     
+    // Updates Per-Frame
     override func update(currentTime: CFTimeInterval) {
         /* Called before each frame is rendered */
         if gameOver{
@@ -985,6 +1101,8 @@ class GameScene: SKScene {
             frenzyMode()
         }
         
+        // Run Tests
+        runTests()
         
         
     }
